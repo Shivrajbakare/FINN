@@ -1,0 +1,56 @@
+{
+  "status": "available",
+  "ticker": "INFY.NS",
+  "document": {
+    "id": "infosys-q1-fy26-call",
+    "title": "Infosys Q1 FY26 earnings conference call",
+    "type": "earnings_call_transcript",
+    "url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2025-2026/q1/documents/transcripts/earningscall.pdf",
+    "event_date": "2025-07-23",
+    "retrieved_at": "2026-10-28T22:22:53.707597+00:00",
+    "sha256": "09fe2ca57d9dbfcdb707bf924041791ac7676fd03253a5869abba4204ed98e72",
+    "page_count": 25,
+    "byte_count": 288245,
+    "manifest_version": "2026-10-29.2",
+    "retrieval": "network"
+  },
+  "claims": [
+    {
+      "id": "period",
+      "kind": "document_context",
+      "page": 1
+    },
+    {
+      "id": "business",
+      "kind": "management_commentary",
+      "page": 3
+    },
+    {
+      "id": "revenue",
+      "kind": "reported_actual",
+      "page": 5
+    },
+    {
+      "id": "margin",
+      "kind": "reported_actual",
+      "page": 5
+    },
+    {
+      "id": "cash_flow",
+      "kind": "reported_actual",
+      "page": 5
+    },
+    {
+      "id": "guidance",
+      "kind": "management_guidance",
+      "page": 4
+    },
+    {
+      "id": "risks",
+      "kind": "management_commentary",
+      "page": 6
+    }
+  ],
+  "second_request": "verified cache",
+  "checked_at": "2026-10-28T22:22:54.729616+00:00"
+}

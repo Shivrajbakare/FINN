@@ -1,103 +1,112 @@
-"""
-Portfolio router — serves portfolio data and stock summaries.
-
-Endpoints:
-  GET /api/portfolio           — list all portfolio companies with latest prices
-  GET /api/portfolio/{ticker}  — detailed history for a single stock
-  GET /api/alerts              — check for price/volume anomalies across portfolio
-"""
+"""Portfolio and alert responses include explicit per-company coverage."""
 
 import asyncio
-from fastapi import APIRouter, Query
+from typing import Literal
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
-from app.config.portfolio import (
-    PORTFOLIO, RESEARCH_COMPANIES, ALL_COMPANIES,
-    get_company, get_portfolio_tickers,
-)
+from app.config.portfolio import PORTFOLIO, ALL_COMPANIES, get_company
 from app.services.market_data import (
-    get_stock_summary, fetch_stock_history, detect_alerts,
-    StockSummary, PriceAlert,
+    HistoryResult, StockSummary, PriceAlert, DataStatus, SOURCE, FRESHNESS_POLICY,
+    fetch_stock_history, summarize_stock, detect_alerts, normalize_ticker, utc_now,
 )
 
 router = APIRouter(tags=["portfolio"])
 
 
-@router.get("/portfolio", response_model=list[StockSummary])
+class CompanyCoverage(BaseModel):
+    ticker: str
+    status: DataStatus
+    as_of: str | None
+    fetched_at: str | None
+    issues: list[str]
+
+
+class Coverage(BaseModel):
+    total: int
+    available: int
+    evaluated: int
+    companies: list[CompanyCoverage]
+
+
+class ScanResponse(BaseModel):
+    status: Literal["complete", "partial", "stale", "unavailable"]
+    checked_at: str
+    source: str = SOURCE
+    freshness_policy: str = FRESHNESS_POLICY
+    coverage: Coverage
+
+
+class PortfolioResponse(ScanResponse):
+    stocks: list[StockSummary]
+
+
+class AlertsResponse(ScanResponse):
+    alerts: list[PriceAlert]
+
+
+async def scan_portfolio():
+    results = await asyncio.gather(
+        *(fetch_stock_history(c.ticker) for c in PORTFOLIO), return_exceptions=True,
+    )
+    data = [r if isinstance(r, HistoryResult) else HistoryResult(
+        issues=["Market data could not be evaluated."]) for r in results]
+    coverage = Coverage(
+        total=len(PORTFOLIO), available=sum(bool(r.history) for r in data),
+        evaluated=sum(r.status == "ok" for r in data),
+        companies=[CompanyCoverage(ticker=c.ticker, status=r.status, as_of=r.as_of,
+                                   fetched_at=r.fetched_at, issues=r.issues)
+                   for c, r in zip(PORTFOLIO, data)],
+    )
+    if coverage.evaluated == coverage.total:
+        status = "complete"
+    elif coverage.available == 0:
+        status = "unavailable"
+    elif all(r.status == "stale" for r in data):
+        status = "stale"
+    else:
+        status = "partial"
+    return data, {"status": status, "coverage": coverage, "checked_at": utc_now().isoformat()}
+
+
+@router.get("/portfolio", response_model=PortfolioResponse)
 async def list_portfolio():
-    """
-    Get all portfolio companies with their latest price, volume, and stats.
-    Fetches in parallel for speed — typically completes in 3-5 seconds.
-    """
-    tasks = [
-        get_stock_summary(c.ticker, c.name, c.sector)
-        for c in PORTFOLIO
-    ]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-
-    # Filter out failures — return partial results rather than failing entirely
-    summaries = []
-    for r in results:
-        if isinstance(r, StockSummary):
-            summaries.append(r)
-        elif isinstance(r, Exception):
-            print(f"[portfolio] Error: {r}")
-
-    return summaries
+    data, metadata = await scan_portfolio()
+    stocks = [summarize_stock(c.ticker, c.name, c.sector, r) for c, r in zip(PORTFOLIO, data)]
+    return PortfolioResponse(stocks=[s for s in stocks if s is not None], **metadata)
 
 
 @router.get("/portfolio/{ticker}")
 async def get_stock_detail(ticker: str):
-    """
-    Get detailed price history for a single stock.
-    Used for the detailed stock view / chart.
-    """
-    # Normalize ticker — accept "RELIANCE" or "RELIANCE.NS"
-    if "." not in ticker:
-        ticker = f"{ticker}.NS"
-
+    try:
+        ticker = normalize_ticker(ticker)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     company = get_company(ticker)
-    data = await fetch_stock_history(ticker, period="6mo")
-
-    return {
-        "ticker": ticker,
-        "name": company.name if company else ticker.split(".")[0],
-        "sector": company.sector if company else "Unknown",
-        "history": data["history"],
-        "info": data.get("info", {}),
-    }
+    data = await fetch_stock_history(ticker)
+    if data.status == "unavailable":
+        raise HTTPException(status_code=503, detail="Market-data provider unavailable.")
+    if data.status == "no_data":
+        raise HTTPException(status_code=404, detail="No completed market data for this symbol.")
+    return {"ticker": ticker, "name": company.name if company else ticker.split(".")[0],
+            "sector": company.sector if company else "Unknown", **data.model_dump()}
 
 
-@router.get("/alerts", response_model=list[PriceAlert])
+@router.get("/alerts", response_model=AlertsResponse)
 async def check_alerts(
-    volume_threshold: float = Query(2.0, description="Alert when volume exceeds this multiple of 20-day avg"),
-    price_threshold: float = Query(3.0, description="Alert when daily price change exceeds this %"),
+    volume_threshold: float = Query(2.0, gt=0, le=100, allow_inf_nan=False),
+    price_threshold: float = Query(3.0, gt=0, le=1000, allow_inf_nan=False),
 ):
-    """
-    Scan all portfolio stocks for price/volume anomalies.
-    Thresholds are configurable per the ENAM brief requirement.
-    """
-    all_alerts: list[PriceAlert] = []
-
-    async def check_one(company):
-        data = await fetch_stock_history(company.ticker, period="6mo")
-        history = data["history"]
-        return await detect_alerts(
-            company.ticker, company.name, history,
-            volume_threshold=volume_threshold,
-            price_threshold=price_threshold,
-        )
-
-    tasks = [check_one(c) for c in PORTFOLIO]
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-
-    for r in results:
-        if isinstance(r, list):
-            all_alerts.extend(r)
-
-    return all_alerts
+    data, metadata = await scan_portfolio()
+    alerts = []
+    for company, result in zip(PORTFOLIO, data):
+        # Stale/partial/short history cannot justify an all-clear or an alert.
+        if result.status == "ok":
+            alerts.extend(await detect_alerts(company.ticker, company.name, result.history,
+                                             volume_threshold, price_threshold))
+    return AlertsResponse(alerts=alerts, **metadata)
 
 
 @router.get("/companies")
 async def list_all_companies():
-    """List all known companies (portfolio + research) — used for search/autocomplete."""
     return [c.model_dump() for c in ALL_COMPANIES]

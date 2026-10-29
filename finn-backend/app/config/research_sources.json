@@ -1,0 +1,205 @@
+{
+  "version": "2026-10-29.2",
+  "companies": [
+    {
+      "ticker": "INFY.NS",
+      "name": "Infosys Limited",
+      "period": "Q4 / FY25 (historical)",
+      "document": {
+        "id": "infosys-q4-fy25-call",
+        "title": "Infosys Q4 FY25 earnings conference call",
+        "type": "earnings_call_transcript",
+        "event_date": "2025-04-17",
+        "url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2024-2025/q4/documents/transcripts/earningscall.pdf",
+        "discovered_on": "https://www.infosys.com/investors/reports-filings/quarterly-results/2024-2025/q4.html",
+        "sha256": "2e4ccd145dd8a746cfcf4ac3ba8b23ca2080f90da1072a8d6010b968abe37e4e",
+        "page_count": 27,
+        "identity_page": 1,
+        "identity_markers": [
+          "Infosys Limited",
+          "Q4 FY'25 Earnings Conference Call",
+          "April 17, 2025"
+        ]
+      },
+      "selections": [
+        {
+          "id": "period",
+          "section": "overview",
+          "kind": "document_context",
+          "title": "Company and reporting period",
+          "period": "Q4 / FY25",
+          "speaker": "Transcript cover",
+          "page": 1,
+          "start": "Infosys Limited Q4",
+          "end": "April 17, 2025"
+        },
+        {
+          "id": "business",
+          "section": "overview",
+          "kind": "management_commentary",
+          "title": "Business capabilities described by management",
+          "period": "At the April 2025 call",
+          "speaker": "Salil Parekh, CEO",
+          "page": 4,
+          "start": "We have a set of capabilities",
+          "end": "lean and consolidation."
+        },
+        {
+          "id": "revenue",
+          "section": "performance",
+          "kind": "reported_actual",
+          "title": "Full-year revenue and growth",
+          "period": "FY25",
+          "speaker": "Jayesh Sanghrajka, CFO",
+          "page": 4,
+          "start": "We closed the year with revenues",
+          "end": "growth in financial year '25."
+        },
+        {
+          "id": "margin",
+          "section": "performance",
+          "kind": "reported_actual",
+          "title": "Quarter and full-year operating margins",
+          "period": "Q4 / FY25",
+          "speaker": "Jayesh Sanghrajka, CFO",
+          "page": 5,
+          "start": "Operating margin for Q4 was",
+          "end": "from FY'24 level."
+        },
+        {
+          "id": "cash_flow",
+          "section": "performance",
+          "kind": "reported_actual",
+          "title": "Free cash flow, including the tax-refund adjustment",
+          "period": "FY25",
+          "speaker": "Jayesh Sanghrajka, CFO",
+          "page": 5,
+          "start": "Free cash flow for FY'25",
+          "end": "112% of net profit."
+        },
+        {
+          "id": "guidance",
+          "section": "guidance",
+          "kind": "management_guidance",
+          "title": "Revenue-growth and operating-margin guidance",
+          "period": "FY26 outlook issued April 2025",
+          "speaker": "Salil Parekh, CEO",
+          "page": 4,
+          "start": "Based on what we are seeing",
+          "end": "20% to 22%."
+        },
+        {
+          "id": "risks",
+          "section": "risks",
+          "kind": "management_commentary",
+          "title": "Manufacturing demand risks",
+          "period": "Outlook at the April 2025 call",
+          "speaker": "Jayesh Sanghrajka, CFO",
+          "page": 7,
+          "start": "Recent challenges in terms of tariffs",
+          "end": "especially in Europe continues."
+        }
+      ]
+    },
+    {
+      "ticker": "INFY.NS",
+      "name": "Infosys Limited",
+      "period": "Q1 / FY26 (historical)",
+      "document": {
+        "id": "infosys-q1-fy26-call",
+        "title": "Infosys Q1 FY26 earnings conference call",
+        "type": "earnings_call_transcript",
+        "event_date": "2025-07-23",
+        "url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2025-2026/q1/documents/transcripts/earningscall.pdf",
+        "discovered_on": "https://www.infosys.com/investors/reports-filings/quarterly-results/2025-2026/q1/earningscall.html",
+        "sha256": "09fe2ca57d9dbfcdb707bf924041791ac7676fd03253a5869abba4204ed98e72",
+        "page_count": 25,
+        "identity_page": 1,
+        "identity_markers": [
+          "Infosys Limited",
+          "Q1 FY26 Earnings Conference Call",
+          "July 23, 2025"
+        ]
+      },
+      "selections": [
+        {
+          "id": "period",
+          "section": "overview",
+          "kind": "document_context",
+          "title": "Company and reporting period",
+          "period": "Q1 / FY26",
+          "speaker": "Transcript cover",
+          "page": 1,
+          "start": "Infosys Limited Q1",
+          "end": "July 23, 2025"
+        },
+        {
+          "id": "business",
+          "section": "overview",
+          "kind": "management_commentary",
+          "title": "Business drivers described by management",
+          "period": "At the July 2025 call",
+          "speaker": "Salil Parekh, CEO",
+          "page": 3,
+          "start": "The main drivers of our growth",
+          "end": "clients selecting us for consolidation."
+        },
+        {
+          "id": "revenue",
+          "section": "performance",
+          "kind": "reported_actual",
+          "title": "Revenue growth including acquisition contribution",
+          "period": "Q1 / FY26",
+          "speaker": "Jayesh Sanghrajka, CFO",
+          "page": 5,
+          "start": "Growth was strong and broad",
+          "end": "7.3% of revenue."
+        },
+        {
+          "id": "margin",
+          "section": "performance",
+          "kind": "reported_actual",
+          "title": "Operating margin and reported changes",
+          "period": "Q1 / FY26",
+          "speaker": "Jayesh Sanghrajka, CFO",
+          "page": 5,
+          "start": "Operating margins were at",
+          "end": "investment in sales and marketing."
+        },
+        {
+          "id": "cash_flow",
+          "section": "performance",
+          "kind": "reported_actual",
+          "title": "Free cash flow and net-profit conversion",
+          "period": "Q1 / FY26",
+          "speaker": "Jayesh Sanghrajka, CFO",
+          "page": 5,
+          "start": "Our relentless focus on cash",
+          "end": "is 109% of net profit."
+        },
+        {
+          "id": "guidance",
+          "section": "guidance",
+          "kind": "management_guidance",
+          "title": "Revised revenue and margin guidance",
+          "period": "FY26 outlook issued July 2025",
+          "speaker": "Salil Parekh, CEO",
+          "page": 4,
+          "start": "Based on our performance in Q1",
+          "end": "unchanged at 20% to 22%."
+        },
+        {
+          "id": "risks",
+          "section": "risks",
+          "kind": "management_commentary",
+          "title": "Uncertainty and delayed client decisions",
+          "period": "Outlook at the July 2025 call",
+          "speaker": "Jayesh Sanghrajka, CFO",
+          "page": 6,
+          "start": "While Q1 was steady",
+          "end": "reflecting in delayed decision making."
+        }
+      ]
+    }
+  ]
+}

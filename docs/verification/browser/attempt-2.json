@@ -1,0 +1,93 @@
+{
+  "started_at": "2026-10-28T22:43:05.463Z",
+  "research": "real local API, hash-verified genuine PDFs in cache",
+  "market": "mocked; no live market-data claim",
+  "cases": [
+    {
+      "viewport": "desktop",
+      "name": "april layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 1440,
+        "scroll": 1440,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": "13px"
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "April real API, excerpts, citations and source-link click",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "july layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 1440,
+        "scroll": 1440,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": "13px"
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "July real API, excerpts, citations and source-link click",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "Repeated period switching preserves identity",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "Unsupported ticker has no substituted evidence",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "missing-document layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 1440,
+        "scroll": 1440,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": null
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "Mocked loading then missing-document state",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "Mocked research HTTP failure and retry",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "Settings save, reload and thresholds on both consumers",
+      "status": "failed",
+      "error": "Expected values to be strictly equal:\n\n'2' !== '3'\n"
+    }
+  ],
+  "sourceNavigations": [
+    {
+      "viewport": "desktop",
+      "document": "infosys-q4-fy25-call",
+      "requested_url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2024-2025/q4/documents/transcripts/earningscall.pdf"
+    },
+    {
+      "viewport": "desktop",
+      "document": "infosys-q1-fy26-call",
+      "requested_url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2025-2026/q1/documents/transcripts/earningscall.pdf"
+    }
+  ],
+  "errors": [],
+  "browser": "156.0.8078.4",
+  "status": "failed",
+  "failure": "Expected values to be strictly equal:\n\n'2' !== '3'\n",
+  "finished_at": "2026-10-28T22:43:18.690Z"
+}

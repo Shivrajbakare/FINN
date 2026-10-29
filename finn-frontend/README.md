@@ -1,36 +1,16 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# FINN frontend
 
-## Getting Started
+Next.js App Router UI for portfolio prices, configurable EOD alerts, shared local settings, and a narrow evidence-backed historical research snapshot.
 
-First, run the development server:
+See [the root README](../README.md) for Python/API setup, environment variables, architecture, deployment instructions, and known limitations.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```powershell
+npm.cmd ci
+npm.cmd run dev
+npm.cmd test
+npm.cmd run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Development defaults to `http://localhost:8000/api`. For a production build, set `NEXT_PUBLIC_API_URL` to the actual HTTPS backend URL ending in `/api`, then run `npm.cmd run build` and `npm.cmd start`. The URL is public and embedded at build time. Missing or invalid production configuration fails the build.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The frontend and backend must use the same scan-envelope API contract. A complete empty alert scan is distinct from partial coverage or unavailable data. The Research page loads its supported-company catalogue and snapshot from `/api/research`: initially only Infosys Q4/FY25, with original PDF page links, historical labels, and explicit unsupported/unavailable states. Real source retrieval has been checked through FastAPI; browser interaction and deployment have not. Announcements and background notifications are not implemented.

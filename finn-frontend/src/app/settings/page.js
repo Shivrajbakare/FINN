@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useSettings } from "@/lib/use-settings";
+import { saveSettings, DEFAULT_SETTINGS } from "@/lib/settings-store.mjs";
 import BottomNav from "@/components/layout/BottomNav";
 
 /**
@@ -8,24 +10,22 @@ import BottomNav from "@/components/layout/BottomNav";
  * Implements configurable thresholds as specified in the ENAM brief.
  */
 export default function SettingsPage() {
-  const [volMultiplier, setVolMultiplier] = useState(2.0);
-  const [priceChangeThreshold, setPriceChangeThreshold] = useState(3.0);
-  const [windowDays, setWindowDays] = useState(1);
-  const [saved, setSaved] = useState(false);
-
+  const settings = useSettings();
+  const [draft, setDraft] = useState(null);
+  const [saveMessage, setSaveMessage] = useState("");
+  const { volMultiplier, priceChangeThreshold } = draft ?? settings ?? DEFAULT_SETTINGS;
+  const updateDraft = (field, value) => {
+    setDraft({ volMultiplier, priceChangeThreshold, [field]: value });
+    setSaveMessage("");
+  };
   const handleSave = (e) => {
     e.preventDefault();
-    // Save to localStorage for client-side persistence
-    localStorage.setItem(
-      "finn_settings",
-      JSON.stringify({
-        volMultiplier,
-        priceChangeThreshold,
-        windowDays,
-      })
-    );
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    if (saveSettings({ volMultiplier, priceChangeThreshold })) {
+      setDraft(null);
+      setSaveMessage("Settings saved.");
+    } else {
+      setSaveMessage("Could not save settings. Browser storage is unavailable; your previous defaults still apply.");
+    }
   };
 
   return (
@@ -46,6 +46,7 @@ export default function SettingsPage() {
         </div>
 
         <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <fieldset disabled={settings === null} style={{ border: 0, padding: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
           {/* Volume Multiplier */}
           <div className="card">
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
@@ -61,11 +62,11 @@ export default function SettingsPage() {
               max="5.0"
               step="0.1"
               value={volMultiplier}
-              onChange={(e) => setVolMultiplier(parseFloat(e.target.value))}
+              onChange={(e) => updateDraft("volMultiplier", parseFloat(e.target.value))}
               style={{ width: "100%", accentColor: "var(--accent-amber)" }}
             />
             <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>
-              Flag stocks when daily volume exceeds {volMultiplier}× their 20-day trailing average.
+              Flag stocks when daily volume reaches {volMultiplier}× their 20-day trailing average.
             </p>
           </div>
 
@@ -84,45 +85,17 @@ export default function SettingsPage() {
               max="10.0"
               step="0.5"
               value={priceChangeThreshold}
-              onChange={(e) => setPriceChangeThreshold(parseFloat(e.target.value))}
+              onChange={(e) => updateDraft("priceChangeThreshold", parseFloat(e.target.value))}
               style={{ width: "100%", accentColor: "var(--accent-blue)" }}
             />
             <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>
-              Alert when a portfolio stock swings more than ±{priceChangeThreshold}% in a single session.
+              Alert when a portfolio stock moves at least {priceChangeThreshold}% in either direction in a single session.
             </p>
           </div>
 
-          {/* Window Digest Default */}
           <div className="card">
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-              <label htmlFor="window-days" style={{ fontSize: "14px", fontWeight: "600" }}>
-                Default Digest Window
-              </label>
-              <span className="font-mono text-green font-bold">
-                {windowDays === 1 ? "24 hours" : `${windowDays} days`}
-              </span>
-            </div>
-            <select
-              id="window-days"
-              value={windowDays}
-              onChange={(e) => setWindowDays(parseInt(e.target.value, 10))}
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "var(--radius-sm)",
-                background: "var(--bg-primary)",
-                color: "var(--text-primary)",
-                border: "var(--border-subtle)",
-                fontSize: "13px",
-              }}
-            >
-              <option value="1">Last 24 Hours (Default)</option>
-              <option value="3">Last 3 Days</option>
-              <option value="7">Last 7 Days (1 Week)</option>
-            </select>
-            <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>
-              Default timeframe applied when filtering corporate announcements.
-            </p>
+            <p style={{ fontSize: "14px", fontWeight: "600" }}>Digest window - unavailable</p>
+            <p className="section-subtitle" style={{ marginTop: "6px" }}>Announcement digests are not implemented yet. There is no active digest-window setting.</p>
           </div>
 
           <button
@@ -139,8 +112,10 @@ export default function SettingsPage() {
               boxShadow: "0 4px 12px var(--accent-blue-glow)",
             }}
           >
-            {saved ? "✓ Settings Saved" : "Save Thresholds"}
+            Save Thresholds
           </button>
+          </fieldset>
+          {saveMessage && <p role="status">{saveMessage}</p>}
         </form>
       </main>
 

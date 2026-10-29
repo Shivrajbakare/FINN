@@ -1,7 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { fetchAlerts } from "@/lib/api";
+import { useState } from "react";
+import { useSettings } from "@/lib/use-settings";
+import { useScan } from "@/lib/use-scan";
+import { DEFAULT_SETTINGS } from "@/lib/settings-store.mjs";
+import { emptyAlertsMessage } from "@/lib/scan-status.mjs";
+import ScanStatus from "@/components/ScanStatus";
 import BottomNav from "@/components/layout/BottomNav";
 
 /**
@@ -9,45 +13,15 @@ import BottomNav from "@/components/layout/BottomNav";
  * Shows detected volume anomalies and price threshold crossings across portfolio.
  */
 export default function AlertsPage() {
-  const [alerts, setAlerts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [volThreshold, setVolThreshold] = useState(2.0);
-  const [priceThreshold, setPriceThreshold] = useState(3.0);
-
-  // Load configured thresholds from localStorage if available
-  useEffect(() => {
-    const saved = localStorage.getItem("finn_settings");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed.volMultiplier) setVolThreshold(parsed.volMultiplier);
-        if (parsed.priceChangeThreshold) setPriceThreshold(parsed.priceChangeThreshold);
-      } catch (e) {
-        console.warn("Could not parse saved settings", e);
-      }
-    }
-  }, []);
-
-  // Fetch alerts whenever thresholds change
-  useEffect(() => {
-    async function loadAlerts() {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await fetchAlerts(volThreshold, priceThreshold);
-        setAlerts(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadAlerts();
-  }, [volThreshold, priceThreshold]);
-
-  const volumeAlerts = alerts.filter((a) => a.alert_type === "volume_spike");
-  const priceAlerts = alerts.filter((a) => a.alert_type === "price_move");
+  const savedSettings = useSettings();
+  const [volumeOverride, setVolThreshold] = useState(null);
+  const volThreshold = volumeOverride ?? savedSettings?.volMultiplier ?? DEFAULT_SETTINGS.volMultiplier;
+  const priceThreshold = savedSettings?.priceChangeThreshold ?? DEFAULT_SETTINGS.priceChangeThreshold;
+  const scan = useScan("alerts", savedSettings === null ? null : {
+    volMultiplier: volThreshold, priceChangeThreshold: priceThreshold,
+  });
+  const { loading, error } = scan;
+  const alerts = scan.data?.alerts ?? [];
 
   return (
     <div className="app-shell">
@@ -57,7 +31,7 @@ export default function AlertsPage() {
           <span className="app-header__subtitle">Market Alerts</span>
         </div>
         <div className="section-badge">
-          {alerts.length} Triggered
+          {loading ? "Scanning..." : error ? "Unavailable" : `${alerts.length} detected`}
         </div>
       </header>
 
@@ -66,11 +40,15 @@ export default function AlertsPage() {
           <div>
             <h1 className="section-title">Triggered Alerts</h1>
             <p className="section-subtitle">
-              Thresholds: &gt;{volThreshold}× vol, &gt;±{priceThreshold}% price
+              Thresholds: ≥{volThreshold}× vol, ≥{priceThreshold}% absolute price move
             </p>
           </div>
         </div>
 
+        <p className="section-subtitle" style={{ marginBottom: "12px" }}>
+          Quick filters apply to this view only. Save defaults in Settings.
+        </p>
+        {volumeOverride !== null && <button onClick={() => setVolThreshold(null)} style={{ marginBottom: "12px" }}>Use saved thresholds</button>}
         {/* Quick Filter Pill Controls */}
         <div style={{ display: "flex", gap: "8px", marginBottom: "16px", overflowX: "auto" }}>
           <button
@@ -86,7 +64,7 @@ export default function AlertsPage() {
               cursor: "pointer",
             }}
           >
-            Sensitive (&gt;1.5×)
+            Sensitive (≥1.5×)
           </button>
           <button
             onClick={() => setVolThreshold(2.0)}
@@ -101,7 +79,7 @@ export default function AlertsPage() {
               cursor: "pointer",
             }}
           >
-            Standard (&gt;2.0×)
+            Standard (≥2.0×)
           </button>
           <button
             onClick={() => setVolThreshold(3.0)}
@@ -116,7 +94,7 @@ export default function AlertsPage() {
               cursor: "pointer",
             }}
           >
-            High Conviction (&gt;3.0×)
+            High Conviction (≥3.0×)
           </button>
         </div>
 
@@ -134,11 +112,12 @@ export default function AlertsPage() {
           </div>
         )}
 
-        {!loading && !error && alerts.length === 0 && (
+        {!loading && !error && <ScanStatus scan={scan.data} />}
+        {!loading && !error && scan.data && alerts.length === 0 && (
           <div className="empty-state">
             <div className="empty-state__icon">🛡️</div>
             <p className="empty-state__text">
-              No unusual moves detected across your 18 portfolio stocks today at current thresholds.
+              {emptyAlertsMessage(scan.data)}
             </p>
           </div>
         )}

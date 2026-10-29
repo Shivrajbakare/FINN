@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-29T00:45:46.569139+00:00",
+  "kind": "local HTTP only",
+  "checks": [
+    {
+      "frontend_path": "/",
+      "status": 200
+    },
+    {
+      "frontend_path": "/research",
+      "status": 200
+    },
+    {
+      "frontend_path": "/alerts",
+      "status": 200
+    },
+    {
+      "frontend_path": "/settings",
+      "status": 200
+    }
+  ],
+  "health": "ok",
+  "unsupported_ticker": "no substituted claims",
+  "cors": "explicit local origin accepted",
+  "browser_verified": false
+}

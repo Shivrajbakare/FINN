@@ -2,12 +2,12 @@
  * FINN API Client
  *
  * Centralized API layer for all backend communication.
- * In development, proxies to localhost:8000 (FastAPI).
- * In production, this would point to the Railway URL.
+ * Calls FastAPI directly. Production requires an explicit HTTPS API base.
  */
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+import { resolveApiBase } from "./api-config.mjs";
+
+const API_BASE = resolveApiBase(process.env.NEXT_PUBLIC_API_URL, process.env.NODE_ENV === "production");
 
 /**
  * Generic fetch wrapper with error handling.
@@ -25,8 +25,7 @@ async function apiFetch(endpoint, options = {}) {
     });
 
     if (!res.ok) {
-      const error = await res.text();
-      throw new Error(`API error ${res.status}: ${error}`);
+      throw new Error(`FINN could not load data (HTTP ${res.status}). Please try again.`);
     }
 
     return await res.json();
@@ -43,22 +42,32 @@ async function apiFetch(endpoint, options = {}) {
 /**
  * Portfolio endpoints
  */
-export async function fetchPortfolio() {
-  return apiFetch("/portfolio");
+export async function fetchPortfolio(options = {}) {
+  return apiFetch("/portfolio", options);
 }
 
 export async function fetchStockDetail(ticker) {
   return apiFetch(`/portfolio/${encodeURIComponent(ticker)}`);
 }
 
-export async function fetchAlerts(volumeThreshold = 2.0, priceThreshold = 3.0) {
+export async function fetchAlerts(volumeThreshold = 2.0, priceThreshold = 3.0, options = {}) {
   const params = new URLSearchParams({
     volume_threshold: volumeThreshold.toString(),
     price_threshold: priceThreshold.toString(),
   });
-  return apiFetch(`/alerts?${params}`);
+  return apiFetch(`/alerts?${params}`, options);
 }
 
 export async function fetchAllCompanies() {
   return apiFetch("/companies");
+}
+
+export async function fetchResearchCompanies(options = {}) {
+  return apiFetch("/research/companies", options);
+}
+
+export async function fetchResearch(ticker, options = {}) {
+  const { documentId, ...requestOptions } = options;
+  const query = documentId ? `?${new URLSearchParams({ document_id: documentId })}` : "";
+  return apiFetch(`/research/${encodeURIComponent(ticker)}${query}`, requestOptions);
 }

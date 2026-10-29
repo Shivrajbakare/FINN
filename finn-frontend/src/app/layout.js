@@ -14,8 +14,6 @@ const geistMono = Geist_Mono({
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
   themeColor: "#0a0e1a",
 };
@@ -23,7 +21,7 @@ export const viewport = {
 export const metadata = {
   title: "FINN — Financial Investment Agent",
   description:
-    "AI-powered intelligence layer for investors. Portfolio monitoring, announcement digest, and on-demand company research.",
+    "Portfolio monitoring, configurable EOD alerts, and historical company research with primary-document evidence.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

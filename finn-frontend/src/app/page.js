@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { fetchPortfolio, fetchAlerts } from "@/lib/api";
+import { useSettings } from "@/lib/use-settings";
+import { useScan } from "@/lib/use-scan";
+import ScanStatus from "@/components/ScanStatus";
 import BottomNav from "@/components/layout/BottomNav";
 
 /**
@@ -9,33 +10,15 @@ import BottomNav from "@/components/layout/BottomNav";
  * Shows portfolio stocks with prices, highlights anomalies.
  *
  * This is the investor's home screen. Design goal: dense, scannable,
- * and immediately useful. Every stock is one tap away from detail.
+ * and immediately useful, with explicit coverage and quote dates.
  */
 export default function DashboardPage() {
-  const [stocks, setStocks] = useState([]);
-  const [alerts, setAlerts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    async function load() {
-      try {
-        setLoading(true);
-        const [portfolioData, alertsData] = await Promise.all([
-          fetchPortfolio(),
-          fetchAlerts(),
-        ]);
-        setStocks(portfolioData);
-        setAlerts(alertsData);
-      } catch (err) {
-        console.error("[Dashboard] Load error:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-  }, []);
+  const settings = useSettings();
+  const portfolio = useScan("portfolio", settings);
+  const alertScan = useScan("alerts", settings);
+  const stocks = portfolio.data?.stocks ?? [];
+  const alerts = alertScan.data?.alerts ?? [];
+  const { loading, error } = portfolio;
 
   // Map alerts by ticker for quick lookup
   const alertsByTicker = {};
@@ -52,8 +35,8 @@ export default function DashboardPage() {
     return Math.abs(b.change_pct) - Math.abs(a.change_pct);
   });
 
-  const gainers = stocks.filter((s) => s.change_pct > 0).length;
-  const losers = stocks.filter((s) => s.change_pct < 0).length;
+  const gainers = stocks.filter((s) => s.status === "ok" && s.change_pct > 0).length;
+  const losers = stocks.filter((s) => s.status === "ok" && s.change_pct < 0).length;
 
   return (
     <div className="app-shell">
@@ -103,11 +86,15 @@ export default function DashboardPage() {
           <div className="error-state">
             <p>⚠️ {error}</p>
             <p style={{ marginTop: "8px", fontSize: "12px", color: "var(--text-muted)" }}>
-              Make sure the backend is running on port 8000
+              Please try again when the market-data service is available.
             </p>
           </div>
         )}
 
+        {!loading && !error && <ScanStatus scan={portfolio.data} />}
+        {alertScan.loading && !loading && <p role="status">Evaluating alerts...</p>}
+        {alertScan.error && <p role="alert">Alerts unavailable: {alertScan.error}</p>}
+        {alertScan.data?.status !== "complete" && <ScanStatus scan={alertScan.data} />}
         {/* Stock list */}
         {!loading && !error && sortedStocks.length > 0 && (
           <div>
@@ -129,7 +116,7 @@ export default function DashboardPage() {
             <p className="empty-state__text">
               No portfolio data available.
               <br />
-              Check your backend connection.
+              Coverage details above explain which companies could not be loaded.
             </p>
           </div>
         )}
@@ -143,7 +130,7 @@ export default function DashboardPage() {
 /**
  * Individual stock card in the portfolio list.
  */
-function StockCard({ stock, alerts, index }) {
+function StockCard({ stock, alerts = [], index }) {
   const isPositive = stock.change_pct >= 0;
   const changeClass = isPositive
     ? "stock-card__change--positive"
@@ -163,14 +150,15 @@ function StockCard({ stock, alerts, index }) {
         </div>
         <div className="stock-card__name">{stock.name}</div>
         <div className="stock-card__sector">{stock.sector}</div>
+        <div className="section-subtitle">As of {stock.as_of}</div>
+        {stock.status !== "ok" && <div className="text-amber" style={{ fontSize: "11px" }}>{stock.status.replaceAll("_", " ")}</div>}
       </div>
       <div className="stock-card__price-block">
         <div className="stock-card__price">{formatPrice(stock.current_price)}</div>
         <div className={`stock-card__change ${changeClass}`}>
-          {isPositive ? "+" : ""}
-          {stock.change_pct.toFixed(2)}%
+          {stock.change_pct === null ? "Change unavailable" : `${isPositive ? "+" : ""}${stock.change_pct.toFixed(2)}%`}
         </div>
-        {stock.volume_ratio >= 2.0 && (
+        {alerts.some((alert) => alert.alert_type === "volume_spike") && stock.volume_ratio !== null && (
           <div className="stock-card__volume-flag">
             ⚡ {stock.volume_ratio.toFixed(1)}× vol
           </div>

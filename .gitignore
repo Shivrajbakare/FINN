@@ -1,8 +1,10 @@
 # Dependencies
 node_modules/
+node_modules-backup/
 __pycache__/
 *.pyc
 .venv/
+.venv-local/
 venv/
 env/
 
@@ -32,6 +34,7 @@ Thumbs.db
 finn-backend/data/pdfs/
 finn-backend/data/transcripts/
 finn-backend/data/*.db
+finn-backend/data/research/
 
 # Logs
 *.log

@@ -1,0 +1,235 @@
+{
+  "started_at": "2026-10-28T22:45:07.807Z",
+  "research": "real local API, hash-verified genuine PDFs in cache",
+  "market": "mocked; no live market-data claim",
+  "cases": [
+    {
+      "viewport": "desktop",
+      "name": "april layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 1440,
+        "scroll": 1440,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": "13px"
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "April real API, excerpts, citations and source-link click",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "july layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 1440,
+        "scroll": 1440,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": "13px"
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "July real API, excerpts, citations and source-link click",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "Repeated period switching preserves identity",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "Delayed April response cannot overwrite July",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "Unsupported ticker has no substituted evidence",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "missing-document layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 1440,
+        "scroll": 1440,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": null
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "Mocked loading then missing-document state",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "Mocked research HTTP failure and retry",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "settings layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 1440,
+        "scroll": 1440,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": null
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "portfolio layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 1440,
+        "scroll": 1440,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": null
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "alerts layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 1440,
+        "scroll": 1440,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": null
+      }
+    },
+    {
+      "viewport": "desktop",
+      "name": "Settings save, reload and thresholds on both consumers",
+      "status": "passed"
+    },
+    {
+      "viewport": "desktop",
+      "name": "Dashboard and alerts HTTP failure states",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "name": "april layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 390,
+        "scroll": 390,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": "13px"
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "April real API, excerpts, citations and source-link click",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "name": "july layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 390,
+        "scroll": 390,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": "13px"
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "July real API, excerpts, citations and source-link click",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "name": "Repeated period switching preserves identity",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "name": "Delayed April response cannot overwrite July",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "name": "Mobile emulated pinch zoom to 200 percent",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "name": "Unsupported ticker has no substituted evidence",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "name": "missing-document layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 390,
+        "scroll": 390,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": null
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "Mocked loading then missing-document state",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "name": "Mocked research HTTP failure and retry",
+      "status": "passed"
+    },
+    {
+      "viewport": "mobile",
+      "name": "settings layout and zoom metadata",
+      "status": "passed",
+      "dimensions": {
+        "width": 390,
+        "scroll": 390,
+        "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+        "quoteSize": null
+      }
+    },
+    {
+      "viewport": "mobile",
+      "name": "Settings save, reload and thresholds on both consumers",
+      "status": "failed",
+      "error": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Portfolio' })\u001b[22m\n\u001b[2m    - locator resolved to <a href=\"/\" class=\"nav-item \">…</a>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    37 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+    }
+  ],
+  "sourceNavigations": [
+    {
+      "viewport": "desktop",
+      "document": "infosys-q4-fy25-call",
+      "requested_url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2024-2025/q4/documents/transcripts/earningscall.pdf"
+    },
+    {
+      "viewport": "desktop",
+      "document": "infosys-q1-fy26-call",
+      "requested_url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2025-2026/q1/documents/transcripts/earningscall.pdf"
+    },
+    {
+      "viewport": "mobile",
+      "document": "infosys-q4-fy25-call",
+      "requested_url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2024-2025/q4/documents/transcripts/earningscall.pdf"
+    },
+    {
+      "viewport": "mobile",
+      "document": "infosys-q1-fy26-call",
+      "requested_url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2025-2026/q1/documents/transcripts/earningscall.pdf"
+    }
+  ],
+  "errors": [],
+  "browser": "156.0.8078.4",
+  "status": "failed",
+  "failure": "locator.click: Timeout 20000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Portfolio' })\u001b[22m\n\u001b[2m    - locator resolved to <a href=\"/\" class=\"nav-item \">…</a>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    37 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> from <script data-nextjs-dev-overlay=\"true\">…</script> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+  "finished_at": "2026-10-28T22:46:02.387Z"
+}

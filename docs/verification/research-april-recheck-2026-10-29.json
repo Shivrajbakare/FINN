@@ -1,0 +1,56 @@
+{
+  "status": "available",
+  "ticker": "INFY.NS",
+  "document": {
+    "id": "infosys-q4-fy25-call",
+    "title": "Infosys Q4 FY25 earnings conference call",
+    "type": "earnings_call_transcript",
+    "url": "https://www.infosys.com/investors/reports-filings/quarterly-results/2024-2025/q4/documents/transcripts/earningscall.pdf",
+    "event_date": "2025-04-17",
+    "retrieved_at": "2026-10-28T22:23:37.920552+00:00",
+    "sha256": "2e4ccd145dd8a746cfcf4ac3ba8b23ca2080f90da1072a8d6010b968abe37e4e",
+    "page_count": 27,
+    "byte_count": 246724,
+    "manifest_version": "2026-10-29.2",
+    "retrieval": "network"
+  },
+  "claims": [
+    {
+      "id": "period",
+      "kind": "document_context",
+      "page": 1
+    },
+    {
+      "id": "business",
+      "kind": "management_commentary",
+      "page": 4
+    },
+    {
+      "id": "revenue",
+      "kind": "reported_actual",
+      "page": 4
+    },
+    {
+      "id": "margin",
+      "kind": "reported_actual",
+      "page": 5
+    },
+    {
+      "id": "cash_flow",
+      "kind": "reported_actual",
+      "page": 5
+    },
+    {
+      "id": "guidance",
+      "kind": "management_guidance",
+      "page": 4
+    },
+    {
+      "id": "risks",
+      "kind": "management_commentary",
+      "page": 7
+    }
+  ],
+  "second_request": "verified cache",
+  "checked_at": "2026-10-28T22:23:38.898382+00:00"
+}
