@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: finn-backend
+    runtime: python
+    rootDir: finn-backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: RESEARCH_PROVIDER
+        value: compatible_llm
+      - key: RESEARCH_LLM_URL
+        value: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions
+      - key: RESEARCH_LLM_MODEL
+        value: gemini-flash-lite-latest
+      - key: RESEARCH_LLM_API_KEY
+        sync: false
