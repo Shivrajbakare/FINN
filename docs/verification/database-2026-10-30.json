@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "migration": "0001_research",
+  "first_import": {
+    "portfolio_companies": 18,
+    "pinned_documents": 2,
+    "verified_local_documents": [
+      "infosys-q4-fy25-call",
+      "infosys-q1-fy26-call"
+    ]
+  },
+  "second_import": {
+    "portfolio_companies": 18,
+    "pinned_documents": 2,
+    "verified_local_documents": [
+      "infosys-q4-fy25-call",
+      "infosys-q1-fy26-call"
+    ]
+  },
+  "portfolio_count": 18,
+  "pinned_count": 2,
+  "pinned_citations": 14
+}

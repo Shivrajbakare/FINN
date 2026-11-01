@@ -1,192 +1,94 @@
-"use client";
+'use client';
+import { useEffect, useMemo, useState } from 'react';
+import { fetchAnnouncements, fetchPortfolio } from '@/lib/api';
+import { adaptAnnouncements, adaptPortfolio } from '@/lib/adapt';
+import { loadPrefs } from '@/lib/prefs';
+import { pct, dir } from '@/lib/format';
+import AnnouncementCard from '@/components/AnnouncementCard';
+import CompanyDetailSheet from '@/components/CompanyDetailSheet';
 
-import { useState } from "react";
-import { useSettings } from "@/lib/use-settings";
-import { useScan } from "@/lib/use-scan";
-import { DEFAULT_SETTINGS } from "@/lib/settings-store.mjs";
-import { emptyAlertsMessage } from "@/lib/scan-status.mjs";
-import ScanStatus from "@/components/ScanStatus";
-import BottomNav from "@/components/layout/BottomNav";
+const WINDOWS = [['24h', 'Past 24 hours'], ['3d', 'Past 3 days'], ['7d', 'Past 7 days']];
 
-/**
- * Triggered Alerts Page — Mobile First
- * Shows detected volume anomalies and price threshold crossings across portfolio.
- */
-export default function AlertsPage() {
-  const savedSettings = useSettings();
-  const [volumeOverride, setVolThreshold] = useState(null);
-  const volThreshold = volumeOverride ?? savedSettings?.volMultiplier ?? DEFAULT_SETTINGS.volMultiplier;
-  const priceThreshold = savedSettings?.priceChangeThreshold ?? DEFAULT_SETTINGS.priceChangeThreshold;
-  const scan = useScan("alerts", savedSettings === null ? null : {
-    volMultiplier: volThreshold, priceChangeThreshold: priceThreshold,
-  });
-  const { loading, error } = scan;
-  const alerts = scan.data?.alerts ?? [];
+export default function Alerts() {
+  const [tab, setTab] = useState('digest');
+  const [win, setWin] = useState('24h');
+  const [collapse, setCollapse] = useState(true);
+  const [cat, setCat] = useState('All');
+  const [feed, setFeed] = useState(null);
+  const [port, setPort] = useState(null);
+  const [pick, setPick] = useState(null);
+  const [err, setErr] = useState('');
+
+  useEffect(() => { const p = loadPrefs(); setWin(p.window || '24h'); setCollapse(p.collapse ?? true); }, []);
+
+  useEffect(() => {
+    setFeed(null); setErr('');
+    fetchAnnouncements({ window: win, hideRoutine: collapse })
+      .then((r) => setFeed(adaptAnnouncements(r)))
+      .catch(() => setErr('Could not load filings. Try again in a moment.'));
+  }, [win, collapse]);
+
+  useEffect(() => { fetchPortfolio().then((r) => setPort(adaptPortfolio(r))).catch(() => {}); }, []);
+
+  const cats = useMemo(() => ['All', ...new Set((feed?.items ?? []).map((i) => i.category))], [feed]);
+  const items = (feed?.items ?? []).filter((i) => cat === 'All' || i.category === cat);
+  const flagged = port?.flagged ?? [];
 
   return (
-    <div className="app-shell">
-      <header className="app-header">
-        <div>
-          <span className="app-header__logo">FINN</span>
-          <span className="app-header__subtitle">Market Alerts</span>
-        </div>
-        <div className="section-badge">
-          {loading ? "Scanning..." : error ? "Unavailable" : `${alerts.length} detected`}
-        </div>
-      </header>
+    <>
+      <div className="seg" role="tablist">
+        <button role="tab" aria-selected={tab === 'digest'} onClick={() => setTab('digest')}>Filings{feed ? ` (${feed.items.length})` : ''}</button>
+        <button role="tab" aria-selected={tab === 'anomalies'} onClick={() => setTab('anomalies')}>Market moves{port ? ` (${flagged.length})` : ''}</button>
+      </div>
 
-      <main className="app-content">
-        <div className="section-header">
-          <div>
-            <h1 className="section-title">Triggered Alerts</h1>
-            <p className="section-subtitle">
-              Thresholds: ≥{volThreshold}× vol, ≥{priceThreshold}% absolute price move
-            </p>
+      {tab === 'digest' ? (
+        <section>
+          <h1 className="h1" style={{ fontSize: 26 }}>{feed ? `${feed.items.length} filings` : 'Filings'} across your portfolio</h1>
+          <p className="muted" style={{ marginTop: 4 }}>Corporate filings, most material first.{feed?.hidden > 0 && ` ${feed.hidden} routine filings hidden.`}</p>
+          <div className="chips" style={{ marginTop: 16 }} aria-label="Time window">
+            {WINDOWS.map(([k, l]) => <button key={k} className="chip" aria-pressed={win === k} onClick={() => setWin(k)}>{l}</button>)}
           </div>
-        </div>
-
-        <p className="section-subtitle" style={{ marginBottom: "12px" }}>
-          Quick filters apply to this view only. Save defaults in Settings.
-        </p>
-        {volumeOverride !== null && <button onClick={() => setVolThreshold(null)} style={{ marginBottom: "12px" }}>Use saved thresholds</button>}
-        {/* Quick Filter Pill Controls */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "16px", overflowX: "auto" }}>
-          <button
-            onClick={() => setVolThreshold(1.5)}
-            className={`card ${volThreshold === 1.5 ? "card--elevated" : ""}`}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "20px",
-              fontSize: "11px",
-              border: volThreshold === 1.5 ? "1px solid var(--accent-amber)" : "var(--border-subtle)",
-              color: volThreshold === 1.5 ? "var(--accent-amber)" : "var(--text-secondary)",
-              background: "transparent",
-              cursor: "pointer",
-            }}
-          >
-            Sensitive (≥1.5×)
-          </button>
-          <button
-            onClick={() => setVolThreshold(2.0)}
-            className={`card ${volThreshold === 2.0 ? "card--elevated" : ""}`}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "20px",
-              fontSize: "11px",
-              border: volThreshold === 2.0 ? "1px solid var(--accent-amber)" : "var(--border-subtle)",
-              color: volThreshold === 2.0 ? "var(--accent-amber)" : "var(--text-secondary)",
-              background: "transparent",
-              cursor: "pointer",
-            }}
-          >
-            Standard (≥2.0×)
-          </button>
-          <button
-            onClick={() => setVolThreshold(3.0)}
-            className={`card ${volThreshold === 3.0 ? "card--elevated" : ""}`}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "20px",
-              fontSize: "11px",
-              border: volThreshold === 3.0 ? "1px solid var(--accent-amber)" : "var(--border-subtle)",
-              color: volThreshold === 3.0 ? "var(--accent-amber)" : "var(--text-secondary)",
-              background: "transparent",
-              cursor: "pointer",
-            }}
-          >
-            High Conviction (≥3.0×)
-          </button>
-        </div>
-
-        {loading && (
-          <div>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="skeleton skeleton-card" />
-            ))}
+          <div className="chips" style={{ marginTop: 8 }} aria-label="Category">
+            {cats.map((c) => <button key={c} className="chip" aria-pressed={cat === c} onClick={() => setCat(c)}>{c === 'All' ? 'All filings' : c}</button>)}
           </div>
-        )}
-
-        {error && !loading && (
-          <div className="error-state">
-            <p>⚠️ {error}</p>
-          </div>
-        )}
-
-        {!loading && !error && <ScanStatus scan={scan.data} />}
-        {!loading && !error && scan.data && alerts.length === 0 && (
-          <div className="empty-state">
-            <div className="empty-state__icon">🛡️</div>
-            <p className="empty-state__text">
-              {emptyAlertsMessage(scan.data)}
-            </p>
-          </div>
-        )}
-
-        {!loading && !error && alerts.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {alerts.map((alert, idx) => {
-              const isVol = alert.alert_type === "volume_spike";
-              const isPositive = alert.value > 0;
+          <label className="check" style={{ margin: '16px 0 18px' }}>
+            <input type="checkbox" checked={collapse} onChange={(e) => setCollapse(e.target.checked)} />
+            Collapse routine paperwork (ESOP allotments, demat compliance certificates)
+          </label>
+          {err && <div className="empty"><b>Filings unavailable</b>{err}</div>}
+          {!feed && !err && <p className="muted">Loading filings…</p>}
+          {feed && !items.length && <div className="empty"><b>Nothing in this window</b>Try a longer time window or another category.</div>}
+          {items.map((a) => <AnnouncementCard key={a.id} a={a} />)}
+        </section>
+      ) : (
+        <section>
+          <h1 className="h1" style={{ fontSize: 26 }}>{flagged.length} unusual moves</h1>
+          <p className="muted" style={{ marginTop: 4 }}>Price or volume past your thresholds in the last close. Change thresholds in Settings.</p>
+          <div style={{ marginTop: 16 }}>
+            {flagged.map((h) => {
+              const ratio = h.volRatio ?? 1;
               return (
-                <div
-                  key={`${alert.ticker}-${alert.alert_type}-${idx}`}
-                  className="card stagger-item"
-                  style={{
-                    borderLeft: isVol
-                      ? "4px solid var(--accent-amber)"
-                      : isPositive
-                      ? "4px solid var(--accent-green)"
-                      : "4px solid var(--accent-red)",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <span style={{ fontWeight: "700", fontSize: "14px" }}>
-                          {alert.ticker.replace(".NS", "")}
-                        </span>
-                        <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-                          {alert.name}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "2px" }}>
-                        {alert.date}
-                      </div>
-                    </div>
-
-                    <span
-                      style={{
-                        padding: "3px 8px",
-                        borderRadius: "12px",
-                        fontSize: "11px",
-                        fontWeight: "600",
-                        background: isVol
-                          ? "var(--accent-amber-dim)"
-                          : isPositive
-                          ? "var(--accent-green-dim)"
-                          : "var(--accent-red-dim)",
-                        color: isVol
-                          ? "var(--accent-amber)"
-                          : isPositive
-                          ? "var(--accent-green)"
-                          : "var(--accent-red)",
-                      }}
-                    >
-                      {isVol ? `⚡ ${alert.value}× Vol` : `${isPositive ? "+" : ""}${alert.value.toFixed(1)}%`}
-                    </span>
+                <button key={h.id} className="card" style={{ display: 'block', width: '100%' }} onClick={() => setPick(h)}>
+                  <div className="card-top">
+                    <span className="sym">{h.symbol}</span>
+                    <span>{h.name}</span>
+                    {h.sector && <span className="tag">{h.sector}</span>}
+                    <span className={'num ' + dir(h.changePct)} style={{ marginLeft: 'auto', fontWeight: 700, fontSize: 16 }}>{pct(h.changePct)}</span>
                   </div>
-
-                  <p style={{ fontSize: "12px", marginTop: "8px", lineHeight: "1.4", color: "var(--text-primary)" }}>
-                    {alert.message}
-                  </p>
-                </div>
+                  <p className="sum" style={{ marginTop: 8 }}>{h.anomalies.map((a) => a.message).join(' ')}</p>
+                  <div className="vbar" aria-label={`Volume ${ratio.toFixed(1)} times the 20-session average`}>
+                    <i style={{ width: Math.min(100, (ratio / 4) * 100) + '%' }} />
+                    <u style={{ left: '25%' }} />
+                  </div>
+                  <div className="note num" style={{ marginTop: 6 }}>Volume {ratio.toFixed(1)}× the 20-session average (line = 1×)</div>
+                </button>
               );
             })}
+            {port && !flagged.length && <div className="empty"><b>Quiet close</b>No company crossed your thresholds.</div>}
           </div>
-        )}
-      </main>
-
-      <BottomNav active="alerts" alertCount={alerts.length} />
-    </div>
+        </section>
+      )}
+      <CompanyDetailSheet h={pick} onClose={() => setPick(null)} />
+    </>
   );
 }

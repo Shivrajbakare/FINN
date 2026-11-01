@@ -1,0 +1,80 @@
+{
+  "checked_at": "2026-10-30T16:25:45.935543+00:00",
+  "companies": [
+    {
+      "symbol": "TCS",
+      "document_id": "34b8025138b79052508134a0706ea6c1d0d528226d4ea8fd05fd385414f16e01",
+      "source_url": "https://nsearchives.nseindia.com/corporate/TCS_CORPCS_14102026155941_SEInt14102026_signed.pdf",
+      "sha256": "13033ccd2b71c7b60da6b53cdb7c80013366725d8bc36c3a17749503aad8c2fe",
+      "pages": 29,
+      "bytes": 723462,
+      "citations": 12,
+      "snapshot_id": "1b5307d5da2f41aabb03ab454f7c92e1",
+      "initially_uncached": true,
+      "retrieval": "network",
+      "cache_reused": true,
+      "status": "passed",
+      "failed_candidates": []
+    },
+    {
+      "symbol": "M&M",
+      "document_id": "283ab8b9b362e9641f2c685a6e63809339a5b3e52661544ebd2e6bde2842b5d3",
+      "source_url": "https://nsearchives.nseindia.com/corporate/AmitDodani_04082026194302_IntimationofTranscriptofearningcallQ1F27.pdf",
+      "sha256": "eea28e54c969633f0b15444f4f6d0106a8f9ae221798e01036bec2e4ddbfabd8",
+      "pages": 22,
+      "bytes": 3641172,
+      "citations": 12,
+      "snapshot_id": "b893b4be9b014bb2b3d2bcd5f61a3c54",
+      "initially_uncached": true,
+      "retrieval": "network",
+      "cache_reused": true,
+      "status": "passed",
+      "failed_candidates": []
+    },
+    {
+      "symbol": "KOTAKBANK",
+      "document_id": "9357898534d1c58b5f5df4dbf9d333e4e141f3679d42d437bb04b0aa09a867b3",
+      "source_url": "https://nsearchives.nseindia.com/corporate/KMBLOMKAR_30102026213817_Transcript.pdf",
+      "sha256": "385fa0f11a12154ec758c42a01d709cf833813aec072a618dac031b6f285babf",
+      "pages": 1,
+      "bytes": 254153,
+      "citations": 1,
+      "snapshot_id": "d9f936c0a6b843718a51c4fee5bc8b4c",
+      "initially_uncached": true,
+      "retrieval": "network",
+      "cache_reused": true,
+      "status": "passed",
+      "failed_candidates": []
+    },
+    {
+      "symbol": "SUNPHARMA",
+      "document_id": "5bec90df918289c7ef644fba066f10d3367f0688962bc50e95bc6e33d9b0a538",
+      "source_url": "https://nsearchives.nseindia.com/corporate/SUNPHARMA456_06082026165829_IntimationSE20260806EarningsCallTranscriptQ1FY27_Signed.pdf",
+      "sha256": "544bd00a279d2f4733113d34caa33f9f986da040d9a4a56714bf11665cbf1c80",
+      "pages": 21,
+      "bytes": 521634,
+      "citations": 12,
+      "snapshot_id": "97ec39b4a75c4be18acd05c8b4a6cf2b",
+      "initially_uncached": true,
+      "retrieval": "network",
+      "cache_reused": true,
+      "status": "passed",
+      "failed_candidates": []
+    },
+    {
+      "symbol": "TITAN",
+      "document_id": "9d0b9ad436bcf4762f9c426f429660a0fb0c5172f7dca33a83d0212b61572d13",
+      "source_url": "https://nsearchives.nseindia.com/corporate/TITAN_23102026195704_SEQ2FY27EarningCall.pdf",
+      "sha256": "25d768baed77aca1df0363c5546ca4456f6dd6282cdb95ce3f27ee97ba2940bf",
+      "pages": 2,
+      "bytes": 442283,
+      "citations": 3,
+      "snapshot_id": "3aa298a216a6404b918e96477a1da79e",
+      "initially_uncached": true,
+      "retrieval": "network",
+      "cache_reused": true,
+      "status": "passed",
+      "failed_candidates": []
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "TCS": {
+    "identity_markers": ["Tata Consultancy Services"],
+    "hosts": ["www.tcs.com"],
+    "listing_urls": ["https://www.tcs.com/investor-relations/financial-statements"],
+    "identity_source": "https://www.tcs.com/investor-relations"
+  },
+  "M&M": {
+    "identity_markers": ["Mahindra & Mahindra", "Mahindra and Mahindra"],
+    "hosts": ["www.mahindra.com"],
+    "listing_urls": ["https://www.mahindra.com/investor-relations/reports"],
+    "identity_source": "https://www.mahindra.com/investor-relations"
+  },
+  "KOTAKBANK": {
+    "identity_markers": ["Kotak Mahindra Bank"],
+    "hosts": ["www.kotak.com", "www.kotak.bank.in"],
+    "listing_urls": ["https://www.kotak.bank.in/en/investor-relations/financial-results.html"],
+    "identity_source": "https://www.kotak.com/en/investor-relations/financial-results.html"
+  },
+  "ITC": {
+    "identity_markers": ["ITC Limited", "ITC Ltd", "ITC LIMITED"],
+    "hosts": ["itcportal.com", "www.itcportal.com"],
+    "listing_urls": ["https://itcportal.com/investors/quarterly-results.html", "https://itcportal.com/investors/itc-report-and-accounts.html"],
+    "identity_source": "https://itcportal.com/investors.html"
+  },
+  "HINDUNILVR": {
+    "identity_markers": ["Hindustan Unilever Limited"],
+    "hosts": ["www.hul.co.in"],
+    "listing_urls": ["https://www.hul.co.in/investors/annual-reports-and-performance-highlights/"],
+    "identity_source": "https://www.hul.co.in/investors/"
+  },
+  "INFY": {
+    "identity_markers": ["Infosys Limited"],
+    "hosts": ["www.infosys.com"],
+    "listing_urls": ["https://www.infosys.com/investors/reports-filings/quarterly-results.html"],
+    "identity_source": "https://www.infosys.com/investors.html"
+  },
+  "RELIANCE": {
+    "identity_markers": ["Reliance Industries Limited", "Reliance Industries Ltd", "RELIANCE INDUSTRIES LIMITED"],
+    "hosts": ["www.ril.com", "ril.com"],
+    "listing_urls": ["https://www.ril.com/investors/financial-reporting"],
+    "identity_source": "https://www.ril.com/investors"
+  },
+  "LT": {
+    "identity_markers": ["Larsen & Toubro Limited", "Larsen & Toubro", "L&T"],
+    "hosts": ["www.larsentoubro.com", "investors.larsentoubro.com"],
+    "listing_urls": ["https://investors.larsentoubro.com/Financial_Result.aspx"],
+    "identity_source": "https://www.larsentoubro.com/corporate/investor-relations/"
+  },
+  "SBIN": {
+    "identity_markers": ["State Bank of India"],
+    "hosts": ["sbi.co.in", "bank.sbi"],
+    "listing_urls": ["https://sbi.co.in/web/investor-relations/financial-results"],
+    "identity_source": "https://sbi.co.in/web/investor-relations"
+  }
+}

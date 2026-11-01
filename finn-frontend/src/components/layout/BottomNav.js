@@ -1,54 +1,46 @@
-"use client";
+'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Icon } from '../common/Icons';
+import { fetchAnnouncements } from '@/lib/api';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-/**
- * Bottom navigation bar — fixed at the bottom of the mobile viewport.
- *
- * Four tabs matching the FINN workflow:
- * 1. Portfolio (home) — the push digest view
- * 2. Alerts — configurable alert thresholds + triggered alerts
- * 3. Research — pull mode, on-demand company analysis
- * 4. Settings — portfolio config, thresholds
- *
- * Uses emoji icons for now — can replace with an icon library later
- * if we have time on Day 4 polish.
- */
-
-const NAV_ITEMS = [
-  { href: "/", label: "Portfolio", icon: "📊", id: "portfolio" },
-  { href: "/alerts", label: "Alerts", icon: "🔔", id: "alerts" },
-  { href: "/research", label: "Research", icon: "🔍", id: "research" },
-  { href: "/settings", label: "Settings", icon: "⚙️", id: "settings" },
+const TABS = [
+  { href: '/', label: 'Home', icon: 'ledger' },
+  { href: '/alerts', label: 'Alerts', icon: 'flag' },
+  { href: '/research', label: 'Research', icon: 'loupe' },
+  { href: '/settings', label: 'Settings', icon: 'dials' },
 ];
 
-export default function BottomNav({ active, alertCount = 0 }) {
-  const pathname = usePathname();
+export default function BottomNav() {
+  const path = usePathname();
+  const [n, setN] = useState(0);
+
+  // Home page announces the alert count: window.dispatchEvent(new CustomEvent('finn:alerts', { detail: count }))
+  useEffect(() => {
+    const h = (e) => setN(e.detail || 0);
+    window.addEventListener('finn:alerts', h);
+
+    // Initial fetch if user lands directly on non-home page
+    fetchAnnouncements()
+      .then((r) => {
+        const count = r.material_count ?? r.total_in_window ?? (r.announcements?.length ?? 0);
+        setN((prev) => (prev > 0 ? prev : count));
+      })
+      .catch(() => {});
+
+    return () => window.removeEventListener('finn:alerts', h);
+  }, []);
 
   return (
-    <nav className="bottom-nav" aria-label="Main navigation">
-      {NAV_ITEMS.map((item) => {
-        const isActive =
-          active === item.id || pathname === item.href;
-
-        return (
-          <Link
-            key={item.id}
-            href={item.href}
-            className={`nav-item ${isActive ? "nav-item--active" : ""}`}
-            aria-current={isActive ? "page" : undefined}
-          >
-            <span className="nav-icon">{item.icon}</span>
-            <span>{item.label}</span>
-            {item.id === "alerts" && alertCount > 0 && (
-              <span className="alert-badge">
-                {alertCount > 9 ? "9+" : alertCount}
-              </span>
-            )}
-          </Link>
-        );
-      })}
+    <nav className="nav" aria-label="Primary">
+      {TABS.map((t) => (
+        <Link key={t.href} href={t.href} aria-current={path === t.href ? 'page' : undefined}>
+          <Icon name={t.icon} />
+          {t.label}
+          {t.href === '/alerts' && n > 0 && <span className="badge">{n > 9 ? '9+' : n}</span>}
+        </Link>
+      ))}
     </nav>
   );
 }

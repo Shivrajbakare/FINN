@@ -10,9 +10,11 @@ from urllib.parse import urlsplit
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import portfolio, research
+from app.routers import portfolio, research, dynamic_research, announcements
+from app.database import validate_startup, close_database
 from app.services.market_data import close_market_client
 from app.services.research import close_research_tasks
+from app.services.jobs import start_job_worker, stop_job_worker
 
 
 def allowed_origins() -> list[str]:
@@ -29,11 +31,15 @@ def allowed_origins() -> list[str]:
 
 @asynccontextmanager
 async def lifespan(app):
+    validate_startup()
+    await start_job_worker()
     try:
         yield
     finally:
+        await stop_job_worker()
         await close_market_client()
         await close_research_tasks()
+        close_database()
 
 app = FastAPI(
     title="FINN API",
@@ -47,7 +53,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins(),
     allow_credentials=False,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
 
@@ -60,4 +66,6 @@ async def health_check():
 
 # Register routers
 app.include_router(portfolio.router, prefix="/api")
+app.include_router(dynamic_research.router, prefix="/api")
 app.include_router(research.router, prefix="/api")
+app.include_router(announcements.router, prefix="/api")

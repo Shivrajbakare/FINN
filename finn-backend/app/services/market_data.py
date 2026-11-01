@@ -62,6 +62,8 @@ class StockSummary(BaseModel):
     status: DataStatus
     issues: list[str]
     source: str = SOURCE
+    fetched_at: str | None = None
+    price_history: list[EODData] = Field(default_factory=list)
 
 
 class PriceAlert(BaseModel):
@@ -213,6 +215,9 @@ async def _request_chart(ticker: str, period: str) -> dict:
 async def _load(key: tuple[str, str]) -> tuple[dict, str]:
     try:
         payload = await _request_chart(*key)
+        items = payload.get("chart", {}).get("result") or []
+        if items and items[0].get("meta", {}).get("symbol", "").upper() != key[0]:
+            raise ValueError("Provider returned another ticker's data")
         fetched_at = utc_now().isoformat()
         parsed = parse_history(payload, utc_now(), fetched_at)
         if parsed.history:
@@ -261,6 +266,7 @@ def summarize_stock(ticker: str, name: str, sector: str, data: HistoryResult) ->
         volume_sample_count=len(recent), high_52w=data.info.get("fiftyTwoWeekHigh"),
         low_52w=data.info.get("fiftyTwoWeekLow"), as_of=latest.date,
         status=data.status, issues=data.issues,
+        fetched_at=data.fetched_at, price_history=data.history,
     )
 
 

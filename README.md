@@ -1,5 +1,30 @@
 # FINN
 
+## Current release: dynamic research and PostgreSQL (30 October 2026)
+
+Research now supports official NSE company discovery, live primary-document
+discovery, on-demand PDF retrieval, page-level evidence, PostgreSQL snapshots and
+citations, and a durable lightweight worker. The original 18-company portfolio,
+alerts, localStorage settings and both historical Infosys documents are preserved.
+
+**Start with [the current setup and architecture guide](docs/DYNAMIC_RESEARCH.md).**
+It includes PostgreSQL/Alembic/import commands, worker setup, source policies,
+API routes, storage/retention, tests, deployment steps and remaining limitations.
+The [live API verification](docs/verification/dynamic-api-2026-10-30.json) records
+an additional company, ITC, with eleven persisted citations and verified cache reuse.
+
+The default research method is exact source extraction. An optional AI evidence
+selector and conservative financial-figure extraction with deterministic
+comparisons are implemented. Free-form financial synthesis, OCR and general
+financial-table reconciliation are not claimed. Unsupported evidence
+produces an explicit unavailable/insufficient-evidence state.
+
+## Pre-migration implementation notes (historical)
+
+The following original notes describe the earlier release. Statements below
+about absent databases, fixed-only research and supported setup are superseded
+by the current guide above; retained market-data semantics remain applicable.
+
 Mobile-first portfolio monitoring with configurable end-of-day price and volume alerts. Next.js serves the UI; FastAPI reads Yahoo chart data and computes alerts deterministically. Research now offers a narrow, source-backed historical Infosys snapshot with page-linked excerpts from an actual company earnings-call transcript.
 
 ## Local setup (PowerShell)

@@ -1,41 +1,27 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Bricolage_Grotesque, Hanken_Grotesk } from 'next/font/google';
+import './globals.css';
+import TopBar from '@/components/layout/TopBar';
+import BottomNav from '@/components/layout/BottomNav';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--f-display', display: 'swap' });
+const body = Hanken_Grotesk({ subsets: ['latin'], variable: '--f-body', display: 'swap' });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export const metadata = { title: 'FINN', description: 'Indian equity monitor with exchange-filing evidence' };
+export const viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover' };
 
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-  themeColor: "#0a0e1a",
-};
-
-export const metadata = {
-  title: "FINN — Financial Investment Agent",
-  description:
-    "Portfolio monitoring, configurable EOD alerts, and historical company research with primary-document evidence.",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "FINN",
-  },
-};
+const themeInit = `try{document.documentElement.dataset.theme=localStorage.getItem('finn-theme')||'system'}catch(e){}`;
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
-    >
-      <body>{children}</body>
+    <html lang="en" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: themeInit }} /></head>
+      <body>
+        <div className="shell">
+          <TopBar />
+          <main className="page">{children}</main>
+          <BottomNav />
+        </div>
+      </body>
     </html>
   );
 }

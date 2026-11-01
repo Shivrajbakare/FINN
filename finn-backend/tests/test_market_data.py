@@ -13,7 +13,7 @@ from app.services import market_data as market
 NOW = datetime(2026, 10, 28, 12, tzinfo=timezone.utc)  # 17:30 IST
 
 
-def chart(count=25, latest=None):
+def chart(count=25, latest=None, symbol="INFY.NS"):
     day = (latest or NOW).astimezone(market.IST).replace(hour=9, minute=15)
     days = []
     while len(days) < count:
@@ -22,7 +22,7 @@ def chart(count=25, latest=None):
         day -= timedelta(days=1)
     days.reverse()
     return {"chart": {"result": [{
-        "meta": {"currency": "INR"},
+        "meta": {"currency": "INR", "symbol": symbol},
         "timestamp": [int(d.timestamp()) for d in days],
         "indicators": {"quote": [{"open": [100] * count, "high": [101] * count,
                                   "low": [99] * count, "close": [100] * count,
@@ -147,7 +147,7 @@ class AsyncMarketTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(parsed({"chart": {"error": {"code": "Not Found"}}}).status, "no_data")
 
     async def test_cache_expiry_refetches_and_cache_is_bounded(self):
-        with patch.object(market, "_request_chart", return_value=chart()) as request:
+        with patch.object(market, "_request_chart", side_effect=lambda symbol, period: chart(symbol=symbol)) as request:
             with patch.object(market, "monotonic", return_value=0):
                 await market.fetch_stock_history("INFY")
             with patch.object(market, "monotonic", return_value=301):
@@ -157,6 +157,27 @@ class AsyncMarketTests(unittest.IsolatedAsyncioTestCase):
                 await market.fetch_stock_history("TCS")
                 await market.fetch_stock_history("RELIANCE")
             self.assertEqual(len(market._MEMORY_CACHE), 2)
+
+    async def test_other_ticker_response_is_not_displayed_or_cached(self):
+        with patch.object(market, "_request_chart", return_value=chart(symbol="TCS.NS")):
+            result = await market.fetch_stock_history("INFY")
+            self.assertEqual(result.status, "unavailable")
+            self.assertFalse(market._MEMORY_CACHE)
+
+    async def test_each_summary_retains_its_own_history(self):
+        async def provider(symbol, period):
+            data = chart(symbol=symbol)
+            if symbol == "TCS.NS":
+                for key in ("open", "high", "low", "close"):
+                    quote(data)[key] = [value * 2 for value in quote(data)[key]]
+            return data
+        with patch.object(market, "_request_chart", side_effect=provider):
+            a, b = await asyncio.gather(market.fetch_stock_history("INFY"), market.fetch_stock_history("TCS"))
+        first = market.summarize_stock("INFY.NS", "Infosys", "IT", a)
+        second = market.summarize_stock("TCS.NS", "TCS", "IT", b)
+        self.assertEqual(first.price_history[-1].close, 100)
+        self.assertEqual(second.price_history[-1].close, 200)
+        self.assertEqual(first.fetched_at, NOW.isoformat())
 
     async def test_cancellation_does_not_cancel_shared_request(self):
         gate = asyncio.Event()

@@ -17,6 +17,7 @@ async function apiFetch(endpoint, options = {}) {
 
   try {
     const res = await fetch(url, {
+      cache: "no-store",
       ...options,
       headers: {
         "Content-Type": "application/json",
@@ -25,6 +26,11 @@ async function apiFetch(endpoint, options = {}) {
     });
 
     if (!res.ok) {
+      if (endpoint.startsWith("/research/v2/")) {
+        const payload = await res.json().catch(() => null);
+        const message = payload?.detail?.message;
+        if (typeof message === "string") throw new Error(message);
+      }
       throw new Error(`FINN could not load data (HTTP ${res.status}). Please try again.`);
     }
 
@@ -70,4 +76,28 @@ export async function fetchResearch(ticker, options = {}) {
   const { documentId, ...requestOptions } = options;
   const query = documentId ? `?${new URLSearchParams({ document_id: documentId })}` : "";
   return apiFetch(`/research/${encodeURIComponent(ticker)}${query}`, requestOptions);
+}
+
+export function dynamicResearch(path, options = {}) {
+  return apiFetch(`/research/v2/${path}`, options);
+}
+
+export async function fetchAnnouncements({
+  window = "24h",
+  category = "all",
+  hideRoutine = true,
+  ticker = null,
+  signal,
+} = {}) {
+  const params = new URLSearchParams({
+    window,
+    hide_routine: String(hideRoutine),
+  });
+  if (category && category !== "all") {
+    params.set("category", category);
+  }
+  if (ticker) {
+    params.set("ticker", ticker);
+  }
+  return apiFetch(`/announcements?${params}`, { signal });
 }

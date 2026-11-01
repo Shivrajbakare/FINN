@@ -5,6 +5,7 @@ __pycache__/
 *.pyc
 .venv/
 .venv-local/
+.venv-dynamic/
 venv/
 env/
 
@@ -35,6 +36,11 @@ finn-backend/data/pdfs/
 finn-backend/data/transcripts/
 finn-backend/data/*.db
 finn-backend/data/research/
+finn-backend/data/documents/
 
 # Logs
 *.log
+chat_output.txt
+
+# Standalone UI folder
+finn-ui/

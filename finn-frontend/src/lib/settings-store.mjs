@@ -1,12 +1,20 @@
 export const SETTINGS_KEY = "finn_settings";
-export const DEFAULT_SETTINGS = Object.freeze({ volMultiplier: 2, priceChangeThreshold: 3 });
+export const DEFAULT_SETTINGS = Object.freeze({
+  volMultiplier: 2,
+  priceChangeThreshold: 3,
+  digestWindow: "24h",
+  hideRoutine: true,
+});
 const SETTINGS_EVENT = "finn-settings-changed";
 
 export function normalizeSettings(value) {
   const valid = (number, min, max) => typeof number === "number" && Number.isFinite(number) && number >= min && number <= max;
+  const validWindows = ["24h", "3d", "7d", "30d"];
   return {
     volMultiplier: valid(value?.volMultiplier, 1.5, 5) ? value.volMultiplier : DEFAULT_SETTINGS.volMultiplier,
     priceChangeThreshold: valid(value?.priceChangeThreshold, 1, 10) ? value.priceChangeThreshold : DEFAULT_SETTINGS.priceChangeThreshold,
+    digestWindow: validWindows.includes(value?.digestWindow) ? value.digestWindow : DEFAULT_SETTINGS.digestWindow,
+    hideRoutine: typeof value?.hideRoutine === "boolean" ? value.hideRoutine : DEFAULT_SETTINGS.hideRoutine,
   };
 }
 

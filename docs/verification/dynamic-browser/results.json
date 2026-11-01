@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "case": "live company search, document/period selection, cached research, citation expansion and layout",
+      "status": "passed"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "case": "pinned July selector remains available",
+      "status": "passed"
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "case": "live company search, document/period selection, cached research, citation expansion and layout",
+      "status": "passed"
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "case": "pinned July selector remains available",
+      "status": "passed"
+    },
+    {
+      "case": "mocked API outage does not fabricate research",
+      "status": "passed"
+    },
+    {
+      "case": "mocked unknown company has explicit empty state",
+      "status": "passed"
+    }
+  ],
+  "errors": [],
+  "live": "Real API, hosted PostgreSQL and previously verified official ITC document",
+  "mocked": "Unknown company and API failure only"
+}

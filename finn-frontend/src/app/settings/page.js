@@ -1,125 +1,127 @@
-"use client";
+'use client';
+import { useEffect, useState } from 'react';
+import { DEFAULTS, loadPrefs, savePrefs, applyTheme, currentTheme } from '@/lib/prefs';
+import { Icon } from '@/components/common/Icons';
 
-import { useState } from "react";
-import { useSettings } from "@/lib/use-settings";
-import { saveSettings, DEFAULT_SETTINGS } from "@/lib/settings-store.mjs";
-import BottomNav from "@/components/layout/BottomNav";
+export default function Settings() {
+  const [p, setP] = useState(DEFAULTS);
+  const [theme, setTheme] = useState('system');
+  const [saved, setSaved] = useState(false);
 
-/**
- * Settings Page — Configure FINN anomaly thresholds and portfolio preferences.
- * Implements configurable thresholds as specified in the ENAM brief.
- */
-export default function SettingsPage() {
-  const settings = useSettings();
-  const [draft, setDraft] = useState(null);
-  const [saveMessage, setSaveMessage] = useState("");
-  const { volMultiplier, priceChangeThreshold } = draft ?? settings ?? DEFAULT_SETTINGS;
-  const updateDraft = (field, value) => {
-    setDraft({ volMultiplier, priceChangeThreshold, [field]: value });
-    setSaveMessage("");
+  useEffect(() => {
+    setP(loadPrefs());
+    setTheme(currentTheme());
+  }, []);
+
+  const set = (k, v) => setP((x) => ({ ...x, [k]: v }));
+
+  const save = () => {
+    savePrefs(p);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1800);
   };
-  const handleSave = (e) => {
-    e.preventDefault();
-    if (saveSettings({ volMultiplier, priceChangeThreshold })) {
-      setDraft(null);
-      setSaveMessage("Settings saved.");
-    } else {
-      setSaveMessage("Could not save settings. Browser storage is unavailable; your previous defaults still apply.");
-    }
+
+  const pickTheme = (t) => {
+    setTheme(t);
+    applyTheme(t);
   };
 
   return (
-    <div className="app-shell">
-      <header className="app-header">
-        <div>
-          <span className="app-header__logo">FINN</span>
-          <span className="app-header__subtitle">Settings</span>
+    <>
+      <h1 className="h1" style={{ fontSize: 26 }}>Settings</h1>
+      <section>
+        <h2 className="h2" style={{ marginBottom: 10 }}>Appearance</h2>
+        <div className="seg" role="tablist" aria-label="Theme">
+          {[
+            ['light', 'Light', 'sun'],
+            ['dark', 'Dark', 'moon'],
+            ['system', 'System', null],
+          ].map(([k, l, i]) => (
+            <button key={k} role="tab" aria-selected={theme === k} onClick={() => pickTheme(k)}>
+              {i && <Icon name={i} size={16} />}
+              {l}
+            </button>
+          ))}
         </div>
-      </header>
+      </section>
 
-      <main className="app-content">
-        <div className="section-header">
-          <div>
-            <h1 className="section-title">Trigger Thresholds</h1>
-            <p className="section-subtitle">Define what qualifies as unusual</p>
+      <section>
+        <h2 className="h2">What counts as unusual</h2>
+        <div className="set">
+          <div className="set-top">
+            <label className="t" htmlFor="vol">Volume</label>
+            <span className="tag flag num">{p.volume}× average</span>
           </div>
+          <p className="note">Flag a stock when daily volume reaches {p.volume}× its 20-day trailing average.</p>
+          <input
+            id="vol"
+            type="range"
+            min="1.5"
+            max="5"
+            step="0.5"
+            value={p.volume}
+            onChange={(e) => set('volume', +e.target.value)}
+          />
         </div>
-
-        <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <fieldset disabled={settings === null} style={{ border: 0, padding: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
-          {/* Volume Multiplier */}
-          <div className="card">
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-              <label htmlFor="vol-multiplier" style={{ fontSize: "14px", fontWeight: "600" }}>
-                Volume Anomaly Threshold
-              </label>
-              <span className="font-mono text-amber font-bold">{volMultiplier}× avg</span>
-            </div>
+        <div className="set">
+          <div className="set-top">
+            <label className="t" htmlFor="px">Price move</label>
+            <span className="tag num">±{p.price}%</span>
+          </div>
+          <p className="note">Alert when a portfolio stock moves at least {p.price}% in either direction in a single session.</p>
+          <input
+            id="px"
+            type="range"
+            min="1"
+            max="6"
+            step="0.5"
+            value={p.price}
+            onChange={(e) => set('price', +e.target.value)}
+          />
+        </div>
+        <div className="set">
+          <div className="set-top">
+            <label className="t" htmlFor="eod">In-app EOD alerts</label>
             <input
-              id="vol-multiplier"
-              type="range"
-              min="1.5"
-              max="5.0"
-              step="0.1"
-              value={volMultiplier}
-              onChange={(e) => updateDraft("volMultiplier", parseFloat(e.target.value))}
-              style={{ width: "100%", accentColor: "var(--accent-amber)" }}
+              id="eod"
+              className="switch"
+              type="checkbox"
+              checked={p.eod}
+              onChange={(e) => set('eod', e.target.checked)}
             />
-            <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>
-              Flag stocks when daily volume reaches {volMultiplier}× their 20-day trailing average.
-            </p>
           </div>
+          <p className="note">Show the alert badge in the top bar and bottom navigation.</p>
+        </div>
+      </section>
 
-          {/* Price Change % */}
-          <div className="card">
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-              <label htmlFor="price-threshold" style={{ fontSize: "14px", fontWeight: "600" }}>
-                Price Move Threshold
-              </label>
-              <span className="font-mono text-blue font-bold">±{priceChangeThreshold}%</span>
-            </div>
-            <input
-              id="price-threshold"
-              type="range"
-              min="1.0"
-              max="10.0"
-              step="0.5"
-              value={priceChangeThreshold}
-              onChange={(e) => updateDraft("priceChangeThreshold", parseFloat(e.target.value))}
-              style={{ width: "100%", accentColor: "var(--accent-blue)" }}
-            />
-            <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>
-              Alert when a portfolio stock moves at least {priceChangeThreshold}% in either direction in a single session.
-            </p>
-          </div>
+      <section>
+        <h2 className="h2" style={{ marginBottom: 4 }}>Filings feed</h2>
+        <p className="note" style={{ marginBottom: 10 }}>Default time window for the proactive portfolio feed.</p>
+        <div className="seg" role="tablist" aria-label="Default digest window">
+          {[
+            ['24h', '24 hours'],
+            ['3d', '3 days'],
+            ['7d', '7 days'],
+          ].map(([k, l]) => (
+            <button key={k} role="tab" aria-selected={p.window === k} onClick={() => set('window', k)}>
+              {l}
+            </button>
+          ))}
+        </div>
+        <label className="check" style={{ marginTop: 16 }}>
+          <input
+            type="checkbox"
+            checked={p.collapse}
+            onChange={(e) => set('collapse', e.target.checked)}
+          />
+          Auto-collapse routine paperwork (ESOP allotments, demat compliance certificates)
+        </label>
+      </section>
 
-          <div className="card">
-            <p style={{ fontSize: "14px", fontWeight: "600" }}>Digest window - unavailable</p>
-            <p className="section-subtitle" style={{ marginTop: "6px" }}>Announcement digests are not implemented yet. There is no active digest-window setting.</p>
-          </div>
-
-          <button
-            type="submit"
-            style={{
-              padding: "12px",
-              borderRadius: "var(--radius-md)",
-              background: "var(--accent-blue)",
-              color: "#ffffff",
-              fontWeight: "600",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "14px",
-              boxShadow: "0 4px 12px var(--accent-blue-glow)",
-            }}
-          >
-            Save Thresholds
-          </button>
-          </fieldset>
-          {saveMessage && <p role="status">{saveMessage}</p>}
-        </form>
-      </main>
-
-      <BottomNav active="settings" />
-    </div>
+      <button className="btn accent" style={{ width: '100%' }} onClick={save}>
+        Save thresholds
+      </button>
+      {saved && <div className="toast" role="status">Saved</div>}
+    </>
   );
 }

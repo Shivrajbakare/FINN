@@ -1,0 +1,284 @@
+{
+  "status": "passed",
+  "verified_at": "2026-10-30T19:28:52.512689+00:00",
+  "registry": {
+    "source": "https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv",
+    "imported": 2618,
+    "checked_at": "2026-10-30T19:27:43.121340+00:00"
+  },
+  "company": {
+    "id": "22d992d7595c4292b2e7432588b2aabf",
+    "company_name": "ITC Limited",
+    "nse_symbol": "ITC",
+    "bse_code": null,
+    "exchange": "NSE",
+    "sector": null,
+    "industry": null,
+    "is_portfolio_company": false,
+    "registry_source": "https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv",
+    "registry_checked_at": "2026-10-30T19:27:43.121340Z"
+  },
+  "discovery": {
+    "issues": [],
+    "documents_found": 200,
+    "discovery_status": "found"
+  },
+  "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+  "snapshot": {
+    "id": "ecb6b492c9274596a5adf53451d51acc",
+    "company_id": "22d992d7595c4292b2e7432588b2aabf",
+    "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+    "reporting_period": "Q4 FY2025",
+    "generated_at": "2026-10-30T19:28:28.653829Z",
+    "cache_expires_at": "2026-10-31T11:12:55.531190Z",
+    "status": "partial",
+    "snapshot_data": {
+      "company_id": "22d992d7595c4292b2e7432588b2aabf",
+      "company_name": "ITC Limited",
+      "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+      "document_title": "ITC Press Release Q4 FY2025",
+      "reporting_period": "Q4 FY2025",
+      "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+      "sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+      "retrieved_at": "2026-10-30T11:12:55.531190+00:00",
+      "historical": true,
+      "method": "extractive-v1",
+      "status": "partial",
+      "sections": [
+        {
+          "id": "overview",
+          "title": "Business overview",
+          "claims": [
+            {
+              "id": "2e09852997408213098e",
+              "section": "overview",
+              "page": 1,
+              "quote": "FMCG \u26ab PAPERBOARDS & PACKAGING \u26ab AGRI-BUSINESS \u26ab INFORMATION TECHNOLOGY Visit us at www.itcportal.com \u26ab Corporate Identity Number : L16005WB1910PLC001985 \u26ab e-mail : enduringvalue@itc.in Media Statement May 22, 2025 Standalone Financial Results for the Quarter and Year ended 31st March, 2025 Highlights \u2022 Board recommends Final Dividend of Rs. 7.85 per share.",
+              "text": "FMCG \u26ab PAPERBOARDS & PACKAGING \u26ab AGRI-BUSINESS \u26ab INFORMATION TECHNOLOGY Visit us at www.itcportal.com \u26ab Corporate Identity Number : L16005WB1910PLC001985 \u26ab e-mail : enduringvalue@itc.in Media Statement May 22, 2025 Standalone Financial Results for the Quarter and Year ended 31st March, 2025 Highlights \u2022 Board recommends Final Dividend of Rs. 7.85 per share.",
+              "kind": "source_excerpt",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=1"
+            },
+            {
+              "id": "a1dc02e0fc761c0fa45a",
+              "section": "overview",
+              "page": 1,
+              "quote": "Continuing Operations - Full Year: Gross Revenue up 10.2% YoY and EBITDA up 2.3% YoY (ex- Paper, up 4.4% YoY) - Q4: Gross Revenue up 9.2% YoY and EBITDA up 2.5% YoY (ex-Paper, up 4.2% YoY) - Sharp escalation in key input materials (edible oil, wheat, maida, potato, cocoa, leaf tobacco, pulpwood etc.), especially in the second half of the year. \u2022 Hotels Business demerged into ITC Hotels Limited (ITCHL) with effect from 1 st January 2025 - \u2018The Scheme\u2019 1 for demerger of the Hotels Business of the Company into ITCHL became effective from 1st January, 2025, being the Appointed Date and Effective Date of the Scheme .",
+              "text": "Continuing Operations - Full Year: Gross Revenue up 10.2% YoY and EBITDA up 2.3% YoY (ex- Paper, up 4.4% YoY) - Q4: Gross Revenue up 9.2% YoY and EBITDA up 2.5% YoY (ex-Paper, up 4.2% YoY) - Sharp escalation in key input materials (edible oil, wheat, maida, potato, cocoa, leaf tobacco, pulpwood etc.), especially in the second half of the year. \u2022 Hotels Business demerged into ITC Hotels Limited (ITCHL) with effect from 1 st January 2025 - \u2018The Scheme\u2019 1 for demerger of the Hotels Business of the Company into ITCHL became effective from 1st January, 2025, being the Appointed Date and Effective Date of the Scheme .",
+              "kind": "source_excerpt",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=1"
+            },
+            {
+              "id": "58f92166567ea1b6b09f",
+              "section": "overview",
+              "page": 1,
+              "quote": "Pursuant to the scheme, the Hotels Business (along with all assets and liabilities thereof, excluding ITC Grand Central, Mumbai) and the investments held by the Company in Hospitality entities2, have been transferred to ITCHL on a going concern basis. - Reported as \u2018Discontinued Operations\u2019 in the financial results for the year ended 31st March, 2025 in line with applicable Indian Accounting Standards. - Hotels Business posted its highest ever Revenue and operating profits on the back of strong growth in RevPar for the 9 months ended 31st December, 2024.",
+              "text": "Pursuant to the scheme, the Hotels Business (along with all assets and liabilities thereof, excluding ITC Grand Central, Mumbai) and the investments held by the Company in Hospitality entities2, have been transferred to ITCHL on a going concern basis. - Reported as \u2018Discontinued Operations\u2019 in the financial results for the year ended 31st March, 2025 in line with applicable Indian Accounting Standards. - Hotels Business posted its highest ever Revenue and operating profits on the back of strong growth in RevPar for the 9 months ended 31st December, 2024.",
+              "kind": "source_excerpt",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=1"
+            }
+          ],
+          "status": "available"
+        },
+        {
+          "id": "performance",
+          "title": "Financial performance",
+          "claims": [
+            {
+              "id": "99668d195705dd418201",
+              "section": "performance",
+              "page": 1,
+              "quote": "Continuing Operations - Full Year: Gross Revenue up 10.2% YoY and EBITDA up 2.3% YoY (ex- Paper, up 4.4% YoY) - Q4: Gross Revenue up 9.2% YoY and EBITDA up 2.5% YoY (ex-Paper, up 4.2% YoY) - Sharp escalation in key input materials (edible oil, wheat, maida, potato, cocoa, leaf tobacco, pulpwood etc.), especially in the second half of the year. \u2022 Hotels Business demerged into ITC Hotels Limited (ITCHL) with effect from 1 st January 2025 - \u2018The Scheme\u2019 1 for demerger of the Hotels Business of the Company into ITCHL became effective from 1st January, 2025, being the Appointed Date and Effective Date of the Scheme .",
+              "text": "Continuing Operations - Full Year: Gross Revenue up 10.2% YoY and EBITDA up 2.3% YoY (ex- Paper, up 4.4% YoY) - Q4: Gross Revenue up 9.2% YoY and EBITDA up 2.5% YoY (ex-Paper, up 4.2% YoY) - Sharp escalation in key input materials (edible oil, wheat, maida, potato, cocoa, leaf tobacco, pulpwood etc.), especially in the second half of the year. \u2022 Hotels Business demerged into ITC Hotels Limited (ITCHL) with effect from 1 st January 2025 - \u2018The Scheme\u2019 1 for demerger of the Hotels Business of the Company into ITCHL became effective from 1st January, 2025, being the Appointed Date and Effective Date of the Scheme .",
+              "kind": "source_excerpt",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=1"
+            },
+            {
+              "id": "6616e9399f0f3daea9ce",
+              "section": "performance",
+              "page": 1,
+              "quote": "Pursuant to the scheme, the Hotels Business (along with all assets and liabilities thereof, excluding ITC Grand Central, Mumbai) and the investments held by the Company in Hospitality entities2, have been transferred to ITCHL on a going concern basis. - Reported as \u2018Discontinued Operations\u2019 in the financial results for the year ended 31st March, 2025 in line with applicable Indian Accounting Standards. - Hotels Business posted its highest ever Revenue and operating profits on the back of strong growth in RevPar for the 9 months ended 31st December, 2024.",
+              "text": "Pursuant to the scheme, the Hotels Business (along with all assets and liabilities thereof, excluding ITC Grand Central, Mumbai) and the investments held by the Company in Hospitality entities2, have been transferred to ITCHL on a going concern basis. - Reported as \u2018Discontinued Operations\u2019 in the financial results for the year ended 31st March, 2025 in line with applicable Indian Accounting Standards. - Hotels Business posted its highest ever Revenue and operating profits on the back of strong growth in RevPar for the 9 months ended 31st December, 2024.",
+              "kind": "source_excerpt",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=1"
+            },
+            {
+              "id": "52c2a8086eec59b364dd",
+              "section": "performance",
+              "page": 1,
+              "quote": "Profit Before Exceptional items and Tax stood at Rs. 573 crores (Rs. 445 crores for the same period in previous year; Rs. 691 crores for FY24). - Profit After Tax from Discontinued operations for FY25 stood at Rs. 15104 crores (previous year Rs. 512 crores), including an exceptional gain of Rs. 15163 crores. \u2022 Overall Profit After Tax for FY25 (including Profit from Discontinued Operations) stood at Rs. 35196 crores. \u2022 In line with the ITC Next Strategy of building a future ready portfolio, accelerating growth and enhancing competitiveness, several value accretive acquisitions were announced during the year in the FMCG space viz.",
+              "text": "Profit Before Exceptional items and Tax stood at Rs. 573 crores (Rs. 445 crores for the same period in previous year; Rs. 691 crores for FY24). - Profit After Tax from Discontinued operations for FY25 stood at Rs. 15104 crores (previous year Rs. 512 crores), including an exceptional gain of Rs. 15163 crores. \u2022 Overall Profit After Tax for FY25 (including Profit from Discontinued Operations) stood at Rs. 35196 crores. \u2022 In line with the ITC Next Strategy of building a future ready portfolio, accelerating growth and enhancing competitiveness, several value accretive acquisitions were announced during the year in the FMCG space viz.",
+              "kind": "source_excerpt",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=1"
+            },
+            {
+              "id": "financial-85307c01b7bcd6223387",
+              "section": "performance",
+              "page": 1,
+              "quote": "Standalone Financial Results for the Quarter and Year ended 31st March, 2025 Highlights \u2022 Board recommends Final Dividend of Rs",
+              "text": "Standalone Financial Results for the Quarter and Year ended 31st March, 2025 Highlights \u2022 Board recommends Final Dividend of Rs",
+              "kind": "document_context",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=1"
+            },
+            {
+              "id": "financial-463d7683b7e34f27e108",
+              "section": "performance",
+              "page": 3,
+              "quote": "For FY25, Gross Revenue and EBITDA from Continuing Operations stood at Rs. 73464.55 crores and Rs. 24024.83 crores respectively.",
+              "text": "For FY25, Gross Revenue and EBITDA from Continuing Operations stood at Rs. 73464.55 crores and Rs. 24024.83 crores respectively.",
+              "kind": "reported_actual",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=3"
+            }
+          ],
+          "status": "available"
+        },
+        {
+          "id": "guidance",
+          "title": "Management guidance",
+          "claims": [
+            {
+              "id": "3a1f0f1aea363c67b418",
+              "section": "guidance",
+              "page": 1,
+              "quote": "These interventions are expected to augment the Company\u2019s presence and market standing in high-growth and future-facing businesses.",
+              "text": "These interventions are expected to augment the Company\u2019s presence and market standing in high-growth and future-facing businesses.",
+              "kind": "source_excerpt",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=1"
+            },
+            {
+              "id": "ff6d4b6d60718f2d5e44",
+              "section": "guidance",
+              "page": 3,
+              "quote": "India\u2019s macro-economic variables are expected to remain stable in the year ahead, with GDP growth for FY26 expected in the range of 6.2% to 6.5%.",
+              "text": "India\u2019s macro-economic variables are expected to remain stable in the year ahead, with GDP growth for FY26 expected in the range of 6.2% to 6.5%.",
+              "kind": "source_excerpt",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=3"
+            },
+            {
+              "id": "d48e587dece531e0f9d2",
+              "section": "guidance",
+              "page": 3,
+              "quote": "Consumption expenditure is expected to pick up progressively led by continued recovery in rural demand backed by a good monsoon, along with improvement in urban deman d amidst lower inflation levels and tax cuts announced in the Union Budget , which is expected to boost disposable incomes.",
+              "text": "Consumption expenditure is expected to pick up progressively led by continued recovery in rural demand backed by a good monsoon, along with improvement in urban deman d amidst lower inflation levels and tax cuts announced in the Union Budget , which is expected to boost disposable incomes.",
+              "kind": "source_excerpt",
+              "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+              "document_title": "ITC Press Release Q4 FY2025",
+              "reporting_period": "Q4 FY2025",
+              "document_sha256": "c66b436566a77e8953013bc9e9e43686ebb1bfb4d0ed46334b46013dd2b54c5c",
+              "source_url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf",
+              "url": "https://itcportal.com/content/dam/itc-corporate/open-pdfs/investor/quarterly-results/quarterly-results-2024-2025/march-2025/ITC-Press-Release-Q4-FY2025.pdf#page=3"
+            }
+          ],
+          "status": "available"
+        },
+        {
+          "id": "risks",
+          "title": "Risks and management commentary",
+          "claims": [],
+          "status": "insufficient_evidence"
+        }
+      ],
+      "financial_facts": [
+        {
+          "id": "financial-463d7683b7e34f27e108-gross_revenue",
+          "metric": "gross_revenue",
+          "value": "73464.55",
+          "unit": "crore",
+          "currency": "INR",
+          "period": "FY2025",
+          "basis": "standalone",
+          "scope": "continuing_operations",
+          "kind": "reported_actual",
+          "evidence_ids": [
+            "financial-463d7683b7e34f27e108",
+            "financial-85307c01b7bcd6223387"
+          ]
+        },
+        {
+          "id": "financial-463d7683b7e34f27e108-ebitda",
+          "metric": "ebitda",
+          "value": "24024.83",
+          "unit": "crore",
+          "currency": "INR",
+          "period": "FY2025",
+          "basis": "standalone",
+          "scope": "continuing_operations",
+          "kind": "reported_actual",
+          "evidence_ids": [
+            "financial-463d7683b7e34f27e108",
+            "financial-85307c01b7bcd6223387"
+          ]
+        }
+      ],
+      "financial_changes": [],
+      "comparison": {
+        "status": "insufficient_evidence",
+        "rows": [],
+        "message": "No validated like-for-like guidance and actual values are available. Missing prior-period values remain unavailable; no variance was invented."
+      },
+      "limitations": [
+        "Selected source excerpts, not an exhaustive or independently audited assessment.",
+        "Section labels are keyword-selected; an excerpt may discuss expectations or prior periods. Read its full context.",
+        "Structured figures require explicit metric, period, currency, units and accounting basis. Unsupported tables and missing values are not inferred.",
+        "This is a selected-document historical snapshot, not a claim to be the latest results."
+      ]
+    }
+  },
+  "citations_persisted": 11,
+  "second_request": {
+    "cache_hit": true,
+    "retrieval": "cache",
+    "document_id": "8c4b053b00a7cbf2e8105c9b37c3725a713357b393d94cd4e07c92bf15ed23dc",
+    "snapshot_id": "ecb6b492c9274596a5adf53451d51acc"
+  },
+  "portfolio_count": 18
+}
