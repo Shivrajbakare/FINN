@@ -119,6 +119,7 @@ export default function DynamicResearch() {
   const {
     company,
     docs,
+    discoveryDone,
     snap,
     snapDoc,
     stats,
@@ -264,9 +265,14 @@ export default function DynamicResearch() {
 
           {docs && docs.length === 0 && step == null && (
             <div className="empty" style={{ marginTop: 14 }}>
-              <b>No official filings indexed yet</b>Find them directly from the exchange listings.
+              <b>{discoveryDone ? 'No exchange filings found' : 'No official filings indexed yet'}</b>
+              {discoveryDone
+                ? `Exchange crawl completed for ${company.name} (${company.symbol}), but no PDF announcements or annual report filings were published in the last 12 months.`
+                : 'Find them directly from the exchange listings.'}
               <div style={{ marginTop: 12 }}>
-                <button className="btn accent" onClick={discover}>Find official filings</button>
+                <button className={discoveryDone ? 'btn ghost sm' : 'btn accent'} onClick={discover}>
+                  {discoveryDone ? 'Search exchange again' : 'Find official filings'}
+                </button>
               </div>
             </div>
           )}

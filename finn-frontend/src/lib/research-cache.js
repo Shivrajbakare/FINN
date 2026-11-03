@@ -84,6 +84,7 @@ const store = {
   company: null,
   docs: null,
   docsLoading: false,
+  discoveryDone: false,
   snap: null,
   snapDoc: null,
   stats: null,
@@ -124,6 +125,7 @@ export function clearResearchCompany() {
   store.company = null;
   store.docs = null;
   store.docsLoading = false;
+  store.discoveryDone = false;
   store.snap = null;
   store.snapDoc = null;
   store.stats = null;
@@ -140,7 +142,7 @@ export function clearResearchCompany() {
   emit();
 }
 
-export async function openCompanyInCache(c) {
+export async function openCompanyInCache(c, afterDiscovery = false) {
   store.company = c;
   store.hits = [];
   store.q = '';
@@ -153,6 +155,7 @@ export async function openCompanyInCache(c) {
   store.docsLoading = true;
   store.step = null;
   store.unsupported = false;
+  store.discoveryDone = afterDiscovery;
 
   if (typeof window !== 'undefined') {
     try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(c)); } catch {}
@@ -212,7 +215,7 @@ export async function startDiscoveryJob(company) {
         emit();
         if (j.status === 'ready' || j.status === 'completed') {
           store.step = null;
-          await openCompanyInCache(company);
+          await openCompanyInCache(company, true);
           return;
         }
         if (j.status === 'failed') {

@@ -82,6 +82,11 @@ def run_one():
                 documents, issues = discover(company)
                 with transaction() as session:
                     save_discovered(session, company, documents)
+                try:
+                    from app.routers.dynamic_research import invalidate_docs_cache
+                    invalidate_docs_cache(company_id)
+                except Exception:
+                    pass
                 result = {"documents_found": len(documents), "issues": issues,
                           "discovery_status": "found" if documents else "no_matching_documents"}
             else:

@@ -25,6 +25,16 @@ _STATS_CACHE: dict = {}
 _SEARCH_CACHE: dict = {}
 
 
+def invalidate_docs_cache(company_id: str | None = None):
+    if company_id is None:
+        _DOCS_CACHE.clear()
+    else:
+        for key in list(_DOCS_CACHE.keys()):
+            if key[0] == company_id:
+                _DOCS_CACHE.pop(key, None)
+
+
+
 def db():
     try:
         with transaction() as session:
@@ -173,12 +183,15 @@ def documents(company_id: str, limit: int = Query(100, ge=1, le=200), offset: in
     rows = session.scalars(select(Document).where(Document.company_id == company_id)
         .order_by(Document.pinned.desc(), Document.publication_date.desc().nullslast(), Document.document_title)
         .offset(offset).limit(limit)).all()
-    _DOCS_CACHE[key] = (monotonic(), rows)
+    # Only cache non-empty results so newly discovered documents show up immediately
+    if rows:
+        _DOCS_CACHE[key] = (monotonic(), rows)
     return rows
 
 
 @router.post("/companies/{company_id}/discover", response_model=JobView, status_code=202)
 def discover(company_id: str, session=Depends(db)):
+    invalidate_docs_cache(company_id)
     require(session, Company, company_id)
     return submit(session, company_id, None, "discover")
 
