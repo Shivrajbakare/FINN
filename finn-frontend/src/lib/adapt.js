@@ -14,7 +14,7 @@ export function adaptPortfolio(r = {}) {
     const sym = strip(h.ticker ?? h.symbol ?? '');
     const px = h.current_price ?? h.close ?? h.price ?? h.last_close ?? 0;
     const change = h.change_pct ?? h.pct_change ?? h.changePct ?? 0;
-    const vr = h.volume_ratio ?? h.volRatio ?? 1.0;
+    const vr = h.volume_ratio ?? h.volRatio ?? (h.avg_volume_20d ? 1.0 : null);
 
     // Build series: 1M (last ~22 trading days), 3M (last ~66 days), 6M (all ~90 days)
     const series1M = rawHist.slice(-22);
@@ -31,7 +31,7 @@ export function adaptPortfolio(r = {}) {
 
     // Anomalies
     const anomalies = Array.isArray(h.anomalies) ? [...h.anomalies] : [];
-    if (vr >= volThresh) {
+    if (vr != null && vr >= volThresh) {
       anomalies.push({
         kind: 'volume',
         message: `Volume ${vr.toFixed(1)}× 20-session average.`,

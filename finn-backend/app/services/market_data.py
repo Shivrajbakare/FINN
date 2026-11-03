@@ -42,6 +42,7 @@ class HistoryResult(BaseModel):
     expected_session: str | None = None
     freshness_policy: str = FRESHNESS_POLICY
     incomplete_bars: int = 0
+    incomplete_dates: list[str] = Field(default_factory=list)
 
 
 class StockSummary(BaseModel):
@@ -158,6 +159,7 @@ def parse_history(payload: dict, now: datetime, fetched_at: str) -> HistoryResul
                 or (last_date is not None and day <= last_date)):
             invalid = True
             result.incomplete_bars += 1
+            result.incomplete_dates.append(day)
             previous = None  # Do not call a multi-session move a daily change.
             continue
         change = (close - previous) / previous * 100 if previous else None
@@ -257,7 +259,12 @@ def summarize_stock(ticker: str, name: str, sector: str, data: HistoryResult) ->
         return None
     latest = data.history[-1]
     recent = data.history[-21:-1]
-    average = sum(r.volume for r in recent) / 20 if len(recent) == 20 and data.incomplete_bars == 0 else None
+    has_gap = False
+    if len(recent) == 20:
+        start_date = recent[0].date
+        end_date = latest.date
+        has_gap = any(start_date <= d <= end_date for d in getattr(data, 'incomplete_dates', []))
+    average = sum(r.volume for r in recent) / 20 if (len(recent) == 20 and not has_gap) else None
     ratio = latest.volume / average if average and average > 0 else None
     return StockSummary(
         ticker=ticker, name=name, sector=sector, current_price=latest.close,

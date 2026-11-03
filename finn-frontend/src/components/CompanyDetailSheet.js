@@ -24,7 +24,7 @@ export default function CompanyDetailSheet({ h, onClose }) {
             </div>
             <div style={{ textAlign: 'right' }}>
               <div className={'num ' + dir(h.changePct)} style={{ fontWeight: 700, fontSize: 17 }}>{pct(h.changePct)}</div>
-              <Sparkline data={h.spark} w={84} h={30} />
+              <Sparkline data={h.spark} w={84} h={30} trend={h.changePct} />
             </div>
           </div>
           <dl className="dl num">

@@ -70,7 +70,7 @@ export default function Home() {
           {p.holdings.map((h) => (
             <button key={h.id} className="lrow" onClick={() => setPick(h)}>
               <span style={{ minWidth: 0 }}><span className="sym">{h.symbol}</span><span className="nm" style={{ display: 'block' }}>{h.name}{h.sector ? `, ${h.sector}` : ''}</span></span>
-              <Sparkline data={h.spark} />
+              <Sparkline data={h.spark} trend={h.changePct} />
               <span className="px num">{inr(h.close)}<small className={dir(h.changePct)}>{pct(h.changePct)}</small></span>
             </button>
           ))}

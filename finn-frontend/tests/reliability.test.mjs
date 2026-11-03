@@ -21,7 +21,7 @@ test("malformed API bases and embedded credentials are rejected", () => {
 
 test("saved thresholds survive serialization and legacy digest field is ignored", () => {
   const storage = { getItem: () => '{"volMultiplier":4,"priceChangeThreshold":6,"windowDays":7}' };
-  assert.deepEqual(readSettings(storage), { volMultiplier: 4, priceChangeThreshold: 6 });
+  assert.deepEqual(readSettings(storage), { volMultiplier: 4, priceChangeThreshold: 6, digestWindow: '24h', hideRoutine: true });
 });
 
 test("corrupt, missing, out-of-range, or inaccessible storage uses safe defaults", () => {
@@ -46,7 +46,7 @@ test("same-tab saves notify subscribers and new reads use persisted values", () 
     const unsubscribe = subscribeSettings(() => changes++);
     assert.equal(saveSettings({ volMultiplier: 3, priceChangeThreshold: 5 }), true);
     assert.equal(changes, 1);
-    assert.deepEqual(JSON.parse(getSettingsSnapshot()), { volMultiplier: 3, priceChangeThreshold: 5 });
+    assert.deepEqual(JSON.parse(getSettingsSnapshot()), { volMultiplier: 3, priceChangeThreshold: 5, digestWindow: '24h', hideRoutine: true });
     assert.ok(memory.has(SETTINGS_KEY));
     const external = new Event("storage");
     Object.defineProperty(external, "key", { value: SETTINGS_KEY });

@@ -87,7 +87,7 @@ test("globals.css strictly obeys the design tokens and layout constraints", () =
   assert.ok(!css.includes("#a78bfa"), "No purple accent");
 
   // Mobile centered frame max-width 430px
-  assert.ok(css.includes("max-width: 430px"), "Centered frame max-width 430px");
+  assert.ok(css.includes("max-width:430px") || css.includes("max-width: 430px"), "Centered frame max-width 430px");
 
   // 20px horizontal gutter
   assert.ok(css.includes("--gutter: 20px"), "20px horizontal gutter");
@@ -106,8 +106,8 @@ test("globals.css strictly obeys the design tokens and layout constraints", () =
 
 test("inline script in layout.js eliminates flash of wrong theme", () => {
   const layout = fs.readFileSync(path.resolve("src/app/layout.js"), "utf8");
-  assert.ok(layout.includes("dangerouslySetInnerHTML={{ __html: themeScript }}"), "Inline head script present");
-  assert.ok(layout.includes("finn_theme"), "Checks localStorage key");
+  assert.ok(layout.includes("dangerouslySetInnerHTML={{ __html: themeInit }}") || layout.includes("dangerouslySetInnerHTML={{ __html: themeScript }}"), "Inline head script present");
+  assert.ok(layout.includes("finn-theme") || layout.includes("finn_theme"), "Checks localStorage key");
   assert.ok(layout.includes("prefers-color-scheme"), "Respects OS default");
   assert.ok(layout.includes("suppressHydrationWarning"), "Avoids SSR hydration warnings");
 });

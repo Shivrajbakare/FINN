@@ -1,5 +1,5 @@
 /* FINN design system. Cool paper + navy ink, indigo for action, marigold only for "look here". */
-:root{--bg:#ECEEF1;--surface:#FAFBFC;--sunk:#E1E5EB;--ink:#0F1B33;--ink2:#46526A;--ink3:#7A8498;--line:#D3D8E0;--accent:#2B3FD6;--on-accent:#fff;--up:#0B7A64;--down:#BF3434;--flag:#D99A0B;--flag-bg:#F6E8C3;--panel:#0F1B33;--on-panel:#EEF1F7;--panel2:#9FB0D0}
+:root{--gutter: 20px;--radius-badge: 6px;--radius-card: 10px;--radius-pill: 999px;--bg:#ECEEF1;--surface:#FAFBFC;--sunk:#E1E5EB;--ink:#0F1B33;--ink2:#46526A;--ink3:#7A8498;--line:#D3D8E0;--accent:#2B3FD6;--on-accent:#fff;--up:#0B7A64;--down:#BF3434;--flag:#D99A0B;--flag-bg:#F6E8C3;--panel:#0F1B33;--on-panel:#EEF1F7;--panel2:#9FB0D0;transition:background-color 150ms ease,color 150ms ease}
 :root[data-theme=dark]{--bg:#0B101A;--surface:#131A28;--sunk:#1B2436;--ink:#E8ECF3;--ink2:#A3AEC4;--ink3:#6F7B93;--line:#243047;--accent:#7F8CFF;--on-accent:#0B101A;--up:#3FC4A5;--down:#F27878;--flag:#F0B93A;--flag-bg:#3A2F12;--panel:#1B2540;--on-panel:#EEF1F7;--panel2:#8FA0C4}
 @media(prefers-color-scheme:dark){:root[data-theme=system]{--bg:#0B101A;--surface:#131A28;--sunk:#1B2436;--ink:#E8ECF3;--ink2:#A3AEC4;--ink3:#6F7B93;--line:#243047;--accent:#7F8CFF;--on-accent:#0B101A;--up:#3FC4A5;--down:#F27878;--flag:#F0B93A;--flag-bg:#3A2F12;--panel:#1B2540;--on-panel:#EEF1F7;--panel2:#8FA0C4}}
 *{box-sizing:border-box;margin:0}
