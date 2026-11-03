@@ -6,6 +6,7 @@ import { loadPrefs } from '@/lib/prefs';
 import { pct, dir } from '@/lib/format';
 import AnnouncementCard from '@/components/AnnouncementCard';
 import CompanyDetailSheet from '@/components/CompanyDetailSheet';
+import { AlertDigestSkeleton, AlertAnomaliesSkeleton } from '@/components/common/Skeleton';
 
 const WINDOWS = [['24h', 'Past 24 hours'], ['3d', 'Past 3 days'], ['7d', 'Past 7 days']];
 
@@ -56,7 +57,7 @@ export default function Alerts() {
             Collapse routine paperwork (ESOP allotments, demat compliance certificates)
           </label>
           {err && <div className="empty"><b>Filings unavailable</b>{err}</div>}
-          {!feed && !err && <p className="muted">Loading filings…</p>}
+          {!feed && !err && <AlertDigestSkeleton />}
           {feed && !items.length && <div className="empty"><b>Nothing in this window</b>Try a longer time window or another category.</div>}
           {items.map((a) => <AnnouncementCard key={a.id} a={a} />)}
         </section>
@@ -64,28 +65,31 @@ export default function Alerts() {
         <section>
           <h1 className="h1" style={{ fontSize: 26 }}>{flagged.length} unusual moves</h1>
           <p className="muted" style={{ marginTop: 4 }}>Price or volume past your thresholds in the last close. Change thresholds in Settings.</p>
-          <div style={{ marginTop: 16 }}>
-            {flagged.map((h) => {
-              const ratio = h.volRatio ?? 1;
-              return (
-                <button key={h.id} className="card" style={{ display: 'block', width: '100%' }} onClick={() => setPick(h)}>
-                  <div className="card-top">
-                    <span className="sym">{h.symbol}</span>
-                    <span>{h.name}</span>
-                    {h.sector && <span className="tag">{h.sector}</span>}
-                    <span className={'num ' + dir(h.changePct)} style={{ marginLeft: 'auto', fontWeight: 700, fontSize: 16 }}>{pct(h.changePct)}</span>
-                  </div>
-                  <p className="sum" style={{ marginTop: 8 }}>{h.anomalies.map((a) => a.message).join(' ')}</p>
-                  <div className="vbar" aria-label={`Volume ${ratio.toFixed(1)} times the 20-session average`}>
-                    <i style={{ width: Math.min(100, (ratio / 4) * 100) + '%' }} />
-                    <u style={{ left: '25%' }} />
-                  </div>
-                  <div className="note num" style={{ marginTop: 6 }}>Volume {ratio.toFixed(1)}× the 20-session average (line = 1×)</div>
-                </button>
-              );
-            })}
-            {port && !flagged.length && <div className="empty"><b>Quiet close</b>No company crossed your thresholds.</div>}
-          </div>
+          {!port && !err && <AlertAnomaliesSkeleton />}
+          {port && (
+            <div style={{ marginTop: 16 }}>
+              {flagged.map((h) => {
+                const ratio = h.volRatio ?? 1;
+                return (
+                  <button key={h.id} className="card" style={{ display: 'block', width: '100%' }} onClick={() => setPick(h)}>
+                    <div className="card-top">
+                      <span className="sym">{h.symbol}</span>
+                      <span>{h.name}</span>
+                      {h.sector && <span className="tag">{h.sector}</span>}
+                      <span className={'num ' + dir(h.changePct)} style={{ marginLeft: 'auto', fontWeight: 700, fontSize: 16 }}>{pct(h.changePct)}</span>
+                    </div>
+                    <p className="sum" style={{ marginTop: 8 }}>{h.anomalies.map((a) => a.message).join(' ')}</p>
+                    <div className="vbar" aria-label={`Volume ${ratio.toFixed(1)} times the 20-session average`}>
+                      <i style={{ width: Math.min(100, (ratio / 4) * 100) + '%' }} />
+                      <u style={{ left: '25%' }} />
+                    </div>
+                    <div className="note num" style={{ marginTop: 6 }}>Volume {ratio.toFixed(1)}× the 20-session average (line = 1×)</div>
+                  </button>
+                );
+              })}
+              {!flagged.length && <div className="empty"><b>Quiet close</b>No company crossed your thresholds.</div>}
+            </div>
+          )}
         </section>
       )}
       <CompanyDetailSheet h={pick} onClose={() => setPick(null)} />

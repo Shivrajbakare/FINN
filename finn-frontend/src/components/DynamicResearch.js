@@ -3,7 +3,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { dynamicResearch } from '@/lib/api';
 import { Icon } from './common/Icons';
-import { day } from '@/lib/format';
+import { day, inr } from '@/lib/format';
+import { ResearchDocsSkeleton, ResearchDossierSkeleton, Skeleton } from './common/Skeleton';
+import {
+  mapCompany,
+  getResearchSnapshot,
+  subscribeResearch,
+  updateResearch,
+  clearResearchCompany,
+  openCompanyInCache,
+  startDiscoveryJob,
+  analyzeDocInCache,
+  getSavedCompany,
+} from '@/lib/research-cache';
 
 const QUICK = ['Infosys', 'Reliance', 'TCS', 'M&M', 'L&T', 'ITC', 'SBI', 'HUL'];
 const STEPS = [
@@ -19,200 +31,106 @@ const SECTIONS = [
   ['overview', 'Overview', 'Business model, operating segments, geographic footprint and strategy.', 'Annual reports and strategy presentations'],
   ['risks', 'Risks', 'Operational headwinds, regulatory actions, tax orders and audit observations.', 'Corporate announcements and LODR disclosures'],
 ];
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-const mapDocTypeToSection = (t = '') => {
-  if (t === 'quarterly_financial_results') return 'financials';
-  if (t === 'earnings_call_transcript' || t === 'investor_presentation') return 'guidance';
-  if (t === 'annual_report') return 'overview';
-  if (t === 'corporate_announcement' || t === 'other_verified_disclosure') return 'risks';
-  return 'financials';
-};
-
-// Mappers wired to real FastAPI backend response shapes
-const co = (c) => ({
-  id: c.id,
-  name: c.company_name ?? c.name,
-  symbol: c.nse_symbol || c.bse_code || c.ticker || c.symbol || '',
-  exchange: c.exchange ?? 'NSE',
-  sector: c.sector ?? '',
-  portfolio: c.is_portfolio_company ?? c.is_portfolio ?? c.portfolio ?? false,
-});
-
-const dc = (d) => ({
-  id: d.id,
-  title: d.document_title ?? d.title,
-  type: d.document_type ? d.document_type.replaceAll('_', ' ') : (d.doc_type ?? d.category),
-  period: d.reporting_period ?? d.period ?? '',
-  date: d.publication_date ?? d.retrieved_at ?? d.date,
-  source: d.source_domain ?? d.source ?? 'Official Exchange Source',
-  url: d.source_url ?? d.url ?? d.pdf_url,
-  section: d.section ?? mapDocTypeToSection(d.document_type),
-  analyzed: d.extraction_status === 'ready' || d.analyzed,
-});
-
-const sn = (s) => {
-  const snap = s.snapshot_data ?? s;
-  const facts = snap.financial_facts ?? [];
-  const sections = snap.sections ?? [];
-  const claims = sections.flatMap((sec) => sec.claims ?? []);
-
-  const guidanceClaim = claims.find((c) => c.section === 'guidance' || c.kind === 'management_guidance');
-  const perfClaim = claims.find((c) => c.section === 'performance' || c.kind === 'reported_actual');
-  const briefingParts = [];
-  if (perfClaim) briefingParts.push(perfClaim.text || perfClaim.quote);
-  if (guidanceClaim) briefingParts.push(guidanceClaim.text || guidanceClaim.quote);
-  const briefing =
-    s.briefing ??
-    s.summary ??
-    (briefingParts.length
-      ? briefingParts.join(' ')
-      : `FINN extracted and verified primary disclosures for ${snap.company_name || 'the company'}.`);
-
-  const figures = facts.map((f) => ({
-    label: `${f.metric.replaceAll('_', ' ')} (${f.period || ''})`,
-    value: `${f.currency ? f.currency + ' ' : ''}${f.value} ${f.unit}`,
-  }));
-
-  const citations = claims.slice(0, 4).map((c) => ({
-    section: c.section === 'performance' ? 'financials' : c.section,
-    quote: c.text || c.quote,
-    page: c.page,
-    url: c.url,
-  }));
-
-  const excerpts = claims.map((c) => ({
-    section: c.section === 'performance' ? 'financials' : c.section,
-    text: c.text || c.quote,
-    page: c.page,
-    url: c.url,
-  }));
-
-  return {
-    title: snap.document_title ?? s.title,
-    period: snap.reporting_period ?? s.period,
-    briefing,
-    figures,
-    citations,
-    url: snap.source_url ?? s.url,
-    excerpts,
-  };
-};
 
 export default function DynamicResearch() {
   const params = useSearchParams();
-  const [q, setQ] = useState('');
-  const [hits, setHits] = useState([]);
-  const [unsupported, setUnsupported] = useState(false);
-  const [company, setCompany] = useState(null);
-  const [docs, setDocs] = useState(null);
-  const [step, setStep] = useState(null);
-  const [snap, setSnap] = useState(null);
-  const [snapDoc, setSnapDoc] = useState(null);
-  const [busy, setBusy] = useState(null);
-  const [section, setSection] = useState('financials');
-  const [err, setErr] = useState('');
+  const [store, setStore] = useState(getResearchSnapshot);
   const timer = useRef();
 
+  useEffect(() => {
+    return subscribeResearch((next) => setStore({ ...next }));
+  }, []);
+
   const search = useCallback(async (text) => {
-    setUnsupported(false);
-    if (text.trim().length < 2) return setHits([]);
+    updateResearch({ unsupported: false, err: '' });
+    if (text.trim().length < 2) return updateResearch({ hits: [] });
     try {
       const r = await dynamicResearch('companies?q=' + encodeURIComponent(text));
       if (r.is_unsupported_market || r.unsupported || r.market_notice) {
-        setUnsupported(true);
-        return setHits([]);
+        updateResearch({ unsupported: true, hits: [] });
+        return;
       }
       const list = r.companies ?? r.items ?? (Array.isArray(r) ? r : []);
-      setHits(list.map(co));
-    } catch {
-      setErr('Search failed. Try again.');
+      updateResearch({ hits: list.map(mapCompany), unsupported: false, err: '' });
+    } catch (e) {
+      updateResearch({ err: e.message || 'Search failed. Try again.' });
     }
   }, []);
 
   const onType = (v) => {
-    setQ(v);
+    updateResearch({ q: v });
     clearTimeout(timer.current);
     timer.current = setTimeout(() => search(v), 250);
   };
 
   const open = useCallback(async (c) => {
-    setCompany(c);
-    setHits([]);
-    setQ('');
-    setSnap(null);
-    setSnapDoc(null);
-    setErr('');
-    setDocs(null);
-    try {
-      const res = await dynamicResearch(`companies/${c.id}/documents?limit=200`);
-      const rawDocs = Array.isArray(res) ? res : (res.items ?? res.documents ?? []);
-      setDocs(rawDocs.map(dc));
-
-      // Check verified snapshot history for quick initial view
-      const hist = await dynamicResearch(`companies/${c.id}/history`);
-      if (Array.isArray(hist) && hist.length > 0) {
-        setSnap(sn(hist[0]));
-        setSnapDoc(hist[0].document_id);
-      }
-    } catch {
-      setDocs([]);
-    }
+    await openCompanyInCache(c);
   }, []);
 
   useEffect(() => {
     const c = params.get('c');
-    const defaultQuery = c || 'Infosys';
-    dynamicResearch('companies?q=' + encodeURIComponent(defaultQuery))
+    const snapshot = getResearchSnapshot();
+
+    if (c) {
+      if (!snapshot.company || snapshot.company.symbol.toUpperCase() !== c.toUpperCase()) {
+        dynamicResearch('companies?q=' + encodeURIComponent(c))
+          .then((r) => {
+            const list = r.companies ?? r.items ?? (Array.isArray(r) ? r : []);
+            const l = list.map(mapCompany);
+            if (l[0]) openCompanyInCache(l[0]);
+          })
+          .catch(() => {});
+      }
+      return;
+    }
+
+    // Returning to Research page without a query param:
+    // Check if we already have a researched company in memory or session storage
+    if (snapshot.company) {
+      return; // Keep existing company state intact!
+    }
+
+    const saved = getSavedCompany();
+    if (saved) {
+      openCompanyInCache(saved);
+      return;
+    }
+
+    // Initial default fallback
+    dynamicResearch('companies?q=' + encodeURIComponent('Infosys'))
       .then((r) => {
         const list = r.companies ?? r.items ?? (Array.isArray(r) ? r : []);
-        const l = list.map(co);
-        if (l[0]) open(l[0]);
+        const l = list.map(mapCompany);
+        if (l[0]) openCompanyInCache(l[0]);
       })
       .catch(() => {});
-  }, [params, open]);
-
-  async function runJob(path, onStep) {
-    const job = await dynamicResearch(path, { method: 'POST' });
-    for (let i = 0; i < 120; i++) {
-      const j = await dynamicResearch('jobs/' + job.id);
-      onStep?.(j.status);
-      if (j.status === 'ready' || j.status === 'completed') return j;
-      if (j.status === 'failed') throw new Error(j.message || j.error || 'failed');
-      await sleep(1500);
-    }
-    throw new Error('timeout');
-  }
+  }, [params]);
 
   async function discover() {
-    setErr('');
-    setStep('queued');
-    try {
-      await runJob(`companies/${company.id}/discover`, setStep);
-      await open(company);
-    } catch {
-      setErr('Could not find filings right now. Try again in a minute.');
-    }
-    setStep(null);
+    if (!store.company) return;
+    await startDiscoveryJob(store.company);
   }
 
   async function analyze(d) {
-    setBusy(d.id);
-    setErr('');
-    try {
-      const j = await runJob(`documents/${d.id}/research`);
-      const snapId = j.result?.snapshot_id ?? j.snapshot_id ?? j.result_id;
-      if (snapId) {
-        const snapRes = await dynamicResearch('snapshots/' + snapId);
-        setSnap(sn(snapRes));
-        setSnapDoc(d.id);
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch {
-      setErr('Analysis did not finish. Open the PDF to read it directly, or try again.');
-    }
-    setBusy(null);
+    await analyzeDocInCache(d);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  const {
+    company,
+    docs,
+    snap,
+    snapDoc,
+    stats,
+    statsLoading,
+    step,
+    busyDocId,
+    section,
+    q,
+    hits,
+    unsupported,
+    err,
+  } = store;
 
   const sec = SECTIONS.find((s) => s[0] === section) || SECTIONS[0];
   const list = (docs ?? []).filter((d) => d.section === section);
@@ -250,17 +168,17 @@ export default function DynamicResearch() {
         )}
         <div className="chips" style={{ marginTop: 12 }}>
           {QUICK.map((n) => (
-            <button key={n} className="chip" onClick={() => { setQ(n); search(n); }}>
+            <button key={n} className="chip" onClick={() => { onType(n); search(n); }}>
               {n}
             </button>
           ))}
         </div>
       </section>
 
-      {err && <div className="empty"><b>Something went wrong</b>{err}</div>}
+      {err && <div className="empty" style={{ marginTop: 14 }}><b>Something went wrong</b>{err}</div>}
 
       {company && (
-        <section>
+        <section style={{ marginTop: 26 }}>
           <div className="sec-head">
             <div>
               <h2 className="h1" style={{ fontSize: 24 }}>{company.name}</h2>
@@ -270,10 +188,46 @@ export default function DynamicResearch() {
                 {company.sector ? `, ${company.sector}` : ''}
               </p>
             </div>
-            <button className="btn ghost sm" onClick={() => { setCompany(null); setDocs(null); setSnap(null); }}>
+            <button className="btn ghost sm" onClick={clearResearchCompany}>
               Change
             </button>
           </div>
+
+          {stats && (
+            <div className="figs num" style={{ marginTop: 14 }}>
+              <div>
+                <span>P/E Ratio</span>
+                <b>{stats.pe_ratio != null ? `${stats.pe_ratio}×` : '—'}</b>
+                <small className="muted">Valuation</small>
+              </div>
+              <div>
+                <span>Volume</span>
+                <b>{stats.volume ? (stats.volume >= 1e7 ? `${(stats.volume / 1e7).toFixed(2)} Cr` : stats.volume >= 1e5 ? `${(stats.volume / 1e5).toFixed(2)} L` : stats.volume.toLocaleString('en-IN')) : '—'}</b>
+                <small className="muted">{stats.avg_volume_20d ? `20d avg ${(stats.avg_volume_20d >= 1e7 ? `${(stats.avg_volume_20d / 1e7).toFixed(1)} Cr` : `${(stats.avg_volume_20d / 1e5).toFixed(1)} L`)}` : 'Session volume'}</small>
+              </div>
+              <div>
+                <span>52w High</span>
+                <b>{stats.high_52w != null ? inr(stats.high_52w) : '—'}</b>
+                <small className="muted">{stats.close && stats.high_52w ? `${(((stats.close - stats.high_52w) / stats.high_52w) * 100).toFixed(1)}%` : '52w High'}</small>
+              </div>
+              <div>
+                <span>52w Low</span>
+                <b>{stats.low_52w != null ? inr(stats.low_52w) : '—'}</b>
+                <small className="muted">{stats.close && stats.low_52w ? `+${(((stats.close - stats.low_52w) / stats.low_52w) * 100).toFixed(1)}%` : '52w Low'}</small>
+              </div>
+            </div>
+          )}
+          {statsLoading && !stats && (
+            <div className="figs num" style={{ marginTop: 14 }}>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i}>
+                  <Skeleton w={60} h={12} style={{ marginBottom: 4 }} />
+                  <Skeleton w={80} h={20} style={{ marginBottom: 4 }} />
+                  <Skeleton w={50} h={11} />
+                </div>
+              ))}
+            </div>
+          )}
 
           {snap && (
             <div className="dossier" style={{ marginTop: 14 }}>
@@ -314,20 +268,28 @@ export default function DynamicResearch() {
 
           {step && (
             <div style={{ marginTop: 14 }}>
-              <b>{STEPS[stepIdx]?.[1]}…</b>
-              <div className="track" role="progressbar" aria-valuemin={1} aria-valuemax={5} aria-valuenow={stepIdx + 1}>
+              <b>{STEPS[stepIdx]?.[1] ?? 'Searching exchange filings'}…</b>
+              <div className="track" role="progressbar" aria-valuemin={1} aria-valuemax={5} aria-valuenow={stepIdx >= 0 ? stepIdx + 1 : 1}>
                 {STEPS.map((s, i) => (
                   <i key={s[0]} className={i <= stepIdx ? 'on' : ''} />
                 ))}
               </div>
+              <p className="note" style={{ marginTop: 14 }}>Extracting and indexing official filings from exchange disclosures…</p>
+              <ResearchDocsSkeleton />
             </div>
           )}
 
-          {docs && docs.length > 0 && (
+          {docs === null && step == null && (
+            <div style={{ marginTop: 14 }}>
+              <ResearchDocsSkeleton />
+            </div>
+          )}
+
+          {docs && docs.length > 0 && !step && (
             <div style={{ marginTop: 22 }}>
               <div className="seg" role="tablist">
                 {SECTIONS.map((s) => (
-                  <button key={s[0]} role="tab" aria-selected={section === s[0]} onClick={() => setSection(s[0])}>
+                  <button key={s[0]} role="tab" aria-selected={section === s[0]} onClick={() => updateResearch({ section: s[0] })}>
                     {s[1]}
                   </button>
                 ))}
@@ -364,8 +326,8 @@ export default function DynamicResearch() {
                         <Icon name="check" size={14} />Analysed above
                       </span>
                     ) : (
-                      <button className="btn sm accent" disabled={busy === d.id} onClick={() => analyze(d)}>
-                        <Icon name="spark" size={16} />{busy === d.id ? 'Analysing…' : 'Analyse'}
+                      <button className="btn sm accent" disabled={busyDocId === d.id} onClick={() => analyze(d)}>
+                        <Icon name="spark" size={16} />{busyDocId === d.id ? 'Analysing…' : 'Analyse'}
                       </button>
                     )}
                     <a className="btn sm ghost" href={d.url} target="_blank" rel="noreferrer">

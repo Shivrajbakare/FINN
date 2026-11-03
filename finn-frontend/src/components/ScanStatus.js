@@ -3,7 +3,7 @@ import { day } from '@/lib/format';
 
 export default function ScanStatus({ scan, source, asOf }) {
   return (
-    <div style={{ borderLeft: '3px solid var(--up)', paddingLeft: 12 }}>
+    <div>
       <b>Completed EOD scan: {scan.evaluated} of {scan.total} companies evaluated.</b>
       <p className="muted" style={{ fontSize: 13.5 }}>{source}, as of {day(asOf)}</p>
       <details style={{ marginTop: 6 }}>

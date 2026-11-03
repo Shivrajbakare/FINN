@@ -1,7 +1,10 @@
 import asyncio
 from datetime import date, datetime
+from time import monotonic
+import re
 from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query
+import httpx
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select, func
 from sqlalchemy.exc import SQLAlchemyError
@@ -12,8 +15,14 @@ from app.research_schemas import SnapshotPayload
 from app.services.company_registry import search_companies, spelling_suggestions, check_unsupported_market
 from app.services.jobs import enqueue, run_one
 from app.services.source_http import SourceError
+from app.services.market_data import fetch_stock_history
 
 router = APIRouter(prefix="/research/v2", tags=["dynamic research"])
+
+_DOCS_CACHE: dict = {}
+_HIST_CACHE: dict = {}
+_STATS_CACHE: dict = {}
+_SEARCH_CACHE: dict = {}
 
 
 def db():
@@ -120,10 +129,14 @@ def submit(session, company_id, document_id, kind):
 @router.get("/companies", response_model=CompanySearch)
 def search(q: str = Query("", max_length=120), limit: int = Query(20, ge=1, le=50),
            offset: int = Query(0, ge=0, le=10000), session=Depends(db)):
+    key = (q.strip().lower(), limit, offset)
+    cached = _SEARCH_CACHE.get(key)
+    if cached and monotonic() - cached[0] < 60:
+        return cached[1]
     is_overseas, overseas_notice = check_unsupported_market(q)
     rows, total = search_companies(session, q, limit, offset)
     registry = session.scalar(select(Company.id).where(Company.registry_checked_at.is_not(None)).limit(1))
-    return CompanySearch(
+    result = CompanySearch(
         companies=rows,
         total=total,
         limit=limit,
@@ -133,6 +146,8 @@ def search(q: str = Query("", max_length=120), limit: int = Query(20, ge=1, le=5
         is_unsupported_market=is_overseas,
         unsupported_market_notice=overseas_notice,
     )
+    _SEARCH_CACHE[key] = (monotonic(), result)
+    return result
 
 
 @router.post("/registry-refresh", response_model=JobView, status_code=202)
@@ -150,10 +165,16 @@ def company_detail(company_id: str, session=Depends(db)):
 
 @router.get("/companies/{company_id}/documents", response_model=list[DocumentView])
 def documents(company_id: str, limit: int = Query(100, ge=1, le=200), offset: int = Query(0, ge=0), session=Depends(db)):
+    key = (company_id, limit, offset)
+    cached = _DOCS_CACHE.get(key)
+    if cached and monotonic() - cached[0] < 120:
+        return cached[1]
     require(session, Company, company_id)
-    return session.scalars(select(Document).where(Document.company_id == company_id)
+    rows = session.scalars(select(Document).where(Document.company_id == company_id)
         .order_by(Document.pinned.desc(), Document.publication_date.desc().nullslast(), Document.document_title)
         .offset(offset).limit(limit)).all()
+    _DOCS_CACHE[key] = (monotonic(), rows)
+    return rows
 
 
 @router.post("/companies/{company_id}/discover", response_model=JobView, status_code=202)
@@ -218,6 +239,79 @@ def snapshot(snapshot_id: str, session=Depends(db)):
 
 @router.get("/companies/{company_id}/history", response_model=list[SnapshotView])
 def history(company_id: str, limit: int = Query(20, ge=1, le=100), offset: int = Query(0, ge=0), session=Depends(db)):
+    key = (company_id, limit, offset)
+    cached = _HIST_CACHE.get(key)
+    if cached and monotonic() - cached[0] < 120:
+        return cached[1]
     require(session, Company, company_id)
-    return session.scalars(select(Snapshot).where(Snapshot.company_id == company_id)
+    rows = session.scalars(select(Snapshot).where(Snapshot.company_id == company_id)
         .order_by(Snapshot.generated_at.desc()).offset(offset).limit(limit)).all()
+    _HIST_CACHE[key] = (monotonic(), rows)
+    return rows
+
+
+class CompanyStats(BaseModel):
+    symbol: str
+    name: str | None = None
+    close: float | None = None
+    change_pct: float | None = None
+    pe_ratio: float | None = None
+    volume: int | None = None
+    avg_volume_20d: float | None = None
+    high_52w: float | None = None
+    low_52w: float | None = None
+    day_high: float | None = None
+    day_low: float | None = None
+    as_of: str | None = None
+
+
+@router.get("/companies/{symbol_or_id}/stats", response_model=CompanyStats)
+async def company_stats(symbol_or_id: str):
+    clean = symbol_or_id.strip()
+    cache_key = clean.upper()
+    cached = _STATS_CACHE.get(cache_key)
+    if cached and monotonic() - cached[0] < 300:
+        return cached[1]
+
+    ticker = clean.removeprefix("nse-").split(".")[0].upper()
+
+    try:
+        data = await fetch_stock_history(ticker)
+    except Exception:
+        data = None
+
+    latest = data.history[-1] if data and data.history else None
+    avg_vol = (sum(r.volume for r in data.history[-21:-1]) / 20) if data and len(data.history) >= 21 else None
+
+    # Fetch P/E ratio
+    pe = None
+    try:
+        async with httpx.AsyncClient(timeout=2.5) as client:
+            r = await client.get(
+                f"https://www.google.com/finance/quote/{ticker}:NSE",
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+            )
+            if r.status_code == 200 and "P/E ratio" in r.text:
+                chunk = r.text[r.text.find("P/E ratio"):r.text.find("P/E ratio") + 250]
+                m = re.search(r">([0-9\.]+)<", chunk)
+                if m:
+                    pe = float(m.group(1))
+    except Exception:
+        pass
+
+    result = CompanyStats(
+        symbol=ticker,
+        name=ticker,
+        close=latest.close if latest else None,
+        change_pct=latest.change_pct if latest else None,
+        pe_ratio=pe,
+        volume=latest.volume if latest else None,
+        avg_volume_20d=avg_vol,
+        high_52w=data.info.get("fiftyTwoWeekHigh") if data else None,
+        low_52w=data.info.get("fiftyTwoWeekLow") if data else None,
+        day_high=latest.high if latest else None,
+        day_low=latest.low if latest else None,
+        as_of=latest.date if latest else None,
+    )
+    _STATS_CACHE[cache_key] = (monotonic(), result)
+    return result

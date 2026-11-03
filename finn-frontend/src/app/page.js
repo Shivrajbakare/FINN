@@ -9,6 +9,7 @@ import Sparkline from '@/components/Sparkline';
 import PriceHistory from '@/components/PriceHistory';
 import ScanStatus from '@/components/ScanStatus';
 import CompanyDetailSheet from '@/components/CompanyDetailSheet';
+import { HomeSkeleton } from '@/components/common/Skeleton';
 
 const mood = (g, d) => (g > d * 1.5 ? 'Broad gains' : d > g * 1.5 ? 'Broad losses' : 'Mixed close');
 const tagOf = (h, a) => (a.kind === 'volume' ? `${(h.volRatio ?? 0).toFixed(1)}× vol` : 'Threshold');
@@ -32,7 +33,7 @@ export default function Home() {
   useEffect(() => { load(); }, [load]);
 
   if (err) return <div className="empty"><b>Portfolio unavailable</b>{err}<div style={{ marginTop: 12 }}><button className="btn" onClick={load}>Try again</button></div></div>;
-  if (!p) return <p className="muted">Loading closing prices…</p>;
+  if (!p) return <HomeSkeleton />;
 
   const flagged = all ? p.flagged : p.flagged.slice(0, 4);
   return (

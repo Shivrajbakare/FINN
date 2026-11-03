@@ -7,6 +7,10 @@ from contextlib import asynccontextmanager
 import os
 from urllib.parse import urlsplit
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
