@@ -175,7 +175,12 @@ export default function DynamicResearch() {
         </div>
       </section>
 
-      {err && <div className="empty" style={{ marginTop: 14 }}><b>Something went wrong</b>{err}</div>}
+      {err && (
+        <div className="empty" style={{ marginTop: 14 }}>
+          <b>{err.toLowerCase().includes('rate-limit') ? 'Exchange notice' : 'Notice'}</b>
+          {err}
+        </div>
+      )}
 
       {company && (
         <section style={{ marginTop: 26 }}>

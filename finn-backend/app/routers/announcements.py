@@ -4,7 +4,7 @@ Provides endpoints for the windowed digest, category filtering, and announcement
 """
 
 from typing import Literal
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Response
 from pydantic import BaseModel
 
 from app.services.announcements import (
@@ -27,6 +27,7 @@ class AnnouncementsResponse(BaseModel):
 
 @router.get("", response_model=AnnouncementsResponse)
 async def list_announcements(
+    response: Response,
     window: Literal["24h", "3d", "7d", "30d"] = Query("24h", description="Digest time window"),
     category: str | None = Query(None, description="Optional category filter (e.g. results, M&A, management_change)"),
     hide_routine: bool = Query(True, description="Collapse low-materiality compliance paperwork"),
@@ -43,4 +44,7 @@ async def list_announcements(
         hide_routine=hide_routine,
         ticker=ticker,
     )
+    # Announcements refresh roughly once a day; cache aggressively on CDN, short on client.
+    ttl = {"24h": 300, "3d": 600, "7d": 1200, "30d": 3600}.get(window, 300)
+    response.headers["Cache-Control"] = f"public, s-maxage={ttl}, stale-while-revalidate=86400"
     return AnnouncementsResponse(announcements=announcements, **stats)

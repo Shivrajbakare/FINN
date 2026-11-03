@@ -215,12 +215,17 @@ export async function startDiscoveryJob(company) {
           await openCompanyInCache(company);
           return;
         }
-        if (j.status === 'failed') throw new Error(j.message || j.error || 'failed');
+        if (j.status === 'failed') {
+          const detail = j.error_code === 'discovery_unavailable'
+            ? 'NSE exchange servers temporarily rate-limited the request. Please wait 30 seconds and click "Find official filings" again.'
+            : (j.message || 'Discovery could not be completed right now.');
+          throw new Error(detail);
+        }
         await new Promise((r) => setTimeout(r, 1500));
       }
-      throw new Error('timeout');
-    } catch {
-      store.err = 'Could not find filings right now. Try again in a minute.';
+      throw new Error('Search took too long to complete. Please try again.');
+    } catch (e) {
+      store.err = e.message || 'Could not find filings right now. Try again in a moment.';
       store.step = null;
       emit();
     } finally {
@@ -256,8 +261,8 @@ export async function analyzeDocInCache(d) {
       store.snap = mapSnap(snapRes);
       store.snapDoc = d.id;
     }
-  } catch {
-    store.err = 'Analysis did not finish. Open the PDF to read it directly, or try again.';
+  } catch (e) {
+    store.err = e.message || 'Analysis did not finish. Open the PDF to read it directly, or try again.';
   } finally {
     store.busyDocId = null;
     emit();

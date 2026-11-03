@@ -1,11 +1,11 @@
 import { Icon } from './common/Icons';
-import { day } from '@/lib/format';
+import { dayTime } from '@/lib/format';
 
 export default function ScanStatus({ scan, source, asOf }) {
   return (
     <div>
       <b>Completed EOD scan: {scan.evaluated} of {scan.total} companies evaluated.</b>
-      <p className="muted" style={{ fontSize: 13.5 }}>{source}, as of {day(asOf)}</p>
+      <p className="muted" style={{ fontSize: 13.5 }}>{source}, as of {dayTime(asOf)}</p>
       <details style={{ marginTop: 6 }}>
         <summary style={{ display: 'inline-flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
           <Icon name="down" size={14} />Coverage and freshness details

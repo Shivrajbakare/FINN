@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchPortfolio } from '@/lib/api';
 import { adaptPortfolio } from '@/lib/adapt';
-import { inr, pct, dir, clock, day } from '@/lib/format';
+import { inr, pct, dir, clock, day, dayTime } from '@/lib/format';
 import { Icon } from '@/components/common/Icons';
 import Breadth from '@/components/Breadth';
 import Sparkline from '@/components/Sparkline';
@@ -39,7 +39,7 @@ export default function Home() {
   return (
     <>
       <section>
-        <p className="asof">{p.holdings.length} portfolio companies, closing prices {day(p.asOf)}</p>
+        <p className="asof">{p.holdings.length} portfolio companies · Data as of {dayTime(p.asOf)}</p>
         <h1 className="h1" style={{ margin: '6px 0 4px' }}>{mood(p.gainers, p.decliners)}: <span className="up">{p.gainers} up</span>, <span className="down">{p.decliners} down</span></h1>
         <p className="muted">{p.alertCount} alerts today{p.flagged.length ? `, ${p.flagged.length} companies need a look.` : '.'}</p>
         <Breadth holdings={p.holdings} onPick={setPick} />
@@ -83,6 +83,14 @@ export default function Home() {
           <button className="btn ghost sm" onClick={load} disabled={busy}><Icon name="refresh" size={16} />{busy ? 'Refreshing…' : 'Refresh market data'}</button>
           <span className="note">Last check {clock(p.lastCheck)}</span>
         </div>
+      </section>
+
+      <section>
+        <p className="note" style={{ fontSize: 11.5, lineHeight: 1.6, color: 'var(--ink3)' }}>
+          FINN is not investment advice. Closing prices and volume data sourced from Yahoo Finance.
+          Corporate filings sourced from official NSE and BSE exchange disclosures.
+          Historical closing prices shown, not live quotes. Portfolio value requires actual holdings quantities.
+        </p>
       </section>
 
       <CompanyDetailSheet h={pick} onClose={() => setPick(null)} />

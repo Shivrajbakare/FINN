@@ -423,3 +423,84 @@ two pinned documents and 14 citations. The live API check passed at
 An intermediate assertion failure occurred while old/new worker versions were
 running; after restarting with current code, the full check passed. The initial
 failure did not identify its assertion, so a specific root cause is not claimed.
+
+
+---
+
+## Remediation applied: 3 November 2026
+
+All 28 actionable findings from the November 2026 UI/UX/security audit have been implemented. Changes are local only — no push to GitHub.
+
+### Frontend changes (finn-frontend)
+
+| Area | Change | Files |
+|------|--------|-------|
+| SEO | Per-route titles using %s · FINN template | layout.js, lerts/layout.js, esearch/layout.js, settings/layout.js |
+| SEO | Full Open Graph, Twitter card, favicon, theme-color metadata | layout.js |
+| SEO | theme-color meta set before paint via inline script | layout.js |
+| Accessibility | Skip-to-content link + CSS | layout.js, globals.css |
+| Accessibility | ole=switch, ria-checked on EOD toggle | settings/page.js |
+| Accessibility | ole=radiogroup + ole=radio on theme and window pickers | settings/page.js |
+| Accessibility | ria-live=polite on Alerts content sections | lerts/page.js |
+| Accessibility | ole=group + ria-label on chip filter bars | lerts/page.js |
+| Accessibility | cursor:help on session status (shows tooltip on hover) | globals.css |
+| Security | CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS | 
+ext.config.mjs, ercel.json |
+| Security | productionBrowserSourceMaps: false | 
+ext.config.mjs |
+| Security | encodeURIComponent on ticker in research links | AnnouncementCard.js |
+| UI | "Closed, EOD data" shows IST timestamp in title tooltip | TopBar.js |
+| UI | Market-hours uses NSE/BSE holiday list + 60-second live refresh | TopBar.js |
+| UI | Home page shows "Data as of DD Mon YYYY, HH:MM IST" | page.js, ormat.js |
+| UI | ScanStatus shows IST dayTime instead of bare date | ScanStatus.js |
+| UI | Alerts window filter persisted in URL (?window=3d) | lerts/page.js |
+| UI | Category filter shows count per chip e.g. "Results (4)" | lerts/page.js |
+| UI | Contextual empty state: "No filings in past 24h. Try 3 days..." | lerts/page.js |
+| UI | Settings: "unsaved changes" warning + dynamic button text | settings/page.js |
+| UI | Settings: Reset to defaults button + toast | settings/page.js |
+| UI | Settings: Disclaimer (not investment advice, local storage) | settings/page.js |
+| UI | Home: Disclaimer + data-source attribution section | page.js |
+| UI | Wording unified: Settings uses "Past 24 hours" not "24 hours" | settings/page.js |
+| UI | Desktop shadow for 430px shell | globals.css |
+| Reliability | error.js — branded error boundary | error.js |
+| Reliability | 
+ot-found.js — branded 404 page | 
+ot-found.js |
+| Reliability | loading.js — skeleton loading state | loading.js |
+| Reliability | Research Suspense fallback shows h1 + skeleton (was null) | esearch/page.js |
+| Reliability | AbortController on Alerts fetches (fixes race on fast filter switching) | lerts/page.js |
+| Reliability | AbortController on portfolio fetch in Alerts | lerts/page.js |
+
+### Backend changes (finn-backend)
+
+| Area | Change | Files |
+|------|--------|-------|
+| Caching | Cache-Control: public, s-maxage=300, stale-while-revalidate=14400 on /portfolio | outers/portfolio.py |
+| Caching | Window-aware Cache-Control on /announcements (300–3600s s-maxage) | outers/announcements.py |
+
+### Verified OK (no change needed)
+
+- CORS: no wildcards, explicit origin validation with urlsplit
+- No dangerouslySetInnerHTML — all third-party content rendered as text via JSX
+- External links all have rel="noreferrer" (covers noopener)
+- localStorage wrapped in try/catch in prefs.js, theme.js, settings-store.mjs
+- Backend input validated via Pydantic + FastAPI Query constraints
+- HTTPException used with controlled messages (no stack traces in responses)
+- aria-current="page" already in BottomNav
+- prefers-reduced-motion already in globals.css
+- env(safe-area-inset-bottom) already in .nav and .sheet
+- Nav duplication: TopBar is <header>, BottomNav is <nav> — no duplication
+
+### npm audit
+
+One moderate CVE in minimatch (dev dependency of eslint only — not shipped to production). Next.js 16.4.3 has no known CVEs.
+
+### Outstanding (future work)
+
+1. Rate limiting on API routes — add slowapi or Cloudflare
+2. ISR revalidation tags — add 
+ext: { tags: ['portfolio'] } for on-demand purge
+3. Portfolio onboarding UI — currently defined in server config/portfolio.py
+4. Lighthouse audit — run post-deploy for LCP/CLS/TBT scores
+5. P/E ratio source — currently scraped from Google Finance; use a proper provider
+6. Auth/user model — needed for multi-user deployment

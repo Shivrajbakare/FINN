@@ -8,7 +8,7 @@ from urllib.robotparser import RobotFileParser
 
 import httpx
 
-USER_AGENT = "FINNResearch/1.0"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 MAX_BYTES = 20_000_000
 
 
@@ -45,8 +45,16 @@ class SourceClient:
 
     def __init__(self, hosts):
         self.hosts = set(hosts)
-        self.client = httpx.Client(timeout=httpx.Timeout(20, connect=5), follow_redirects=False,
-                                  trust_env=False, headers={"User-Agent": USER_AGENT})
+        self.client = httpx.Client(
+            timeout=httpx.Timeout(20, connect=5),
+            follow_redirects=False,
+            trust_env=False,
+            headers={
+                "User-Agent": USER_AGENT,
+                "Accept": "*/*",
+                "Accept-Language": "en-US,en;q=0.9",
+            },
+        )
         self.robots = {}
         self.deadline = time.monotonic() + 100
 

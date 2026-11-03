@@ -5,6 +5,7 @@ from hashlib import sha256
 import json
 from pathlib import Path
 import re
+import time
 from urllib.parse import urljoin, urlsplit, urlencode, unquote
 
 from sqlalchemy.dialects.postgresql import insert
@@ -128,13 +129,18 @@ def discover(company):
     with SourceClient(EXCHANGE_HOSTS) as client:
         for api, query, annual in [("corporate-announcements", recent, False), ("annual-reports", params, True)]:
             endpoint = "https://www.nseindia.com/api/" + api + "?" + urlencode(query)
-            try:
-                data = json.loads(client.get(endpoint, 8_000_000, {"application/json"}))
-                documents.extend(exchange_documents(data, company, endpoint, annual))
-                successful += 1
-            except (SourceError, ValueError, TypeError) as exc:
-                issues.append(f"NSE {api}: {getattr(exc, 'code', 'invalid_listing')}. "
-                              + (str(exc) if isinstance(exc, SourceError) else "Unsupported response format."))
+            for attempt in range(2):
+                try:
+                    data = json.loads(client.get(endpoint, 8_000_000, {"application/json"}))
+                    documents.extend(exchange_documents(data, company, endpoint, annual))
+                    successful += 1
+                    break
+                except (SourceError, ValueError, TypeError) as exc:
+                    if attempt == 0 and isinstance(exc, SourceError) and exc.code == "source_restricted":
+                        time.sleep(2.0)
+                        continue
+                    issues.append(f"NSE {api}: {getattr(exc, 'code', 'invalid_listing')}. "
+                                  + (str(exc) if isinstance(exc, SourceError) else "Unsupported response format."))
     policy = POLICIES.get(company.nse_symbol)
     if policy:
         with SourceClient(policy["hosts"]) as client:

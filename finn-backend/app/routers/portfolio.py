@@ -2,7 +2,7 @@
 
 import asyncio
 from typing import Literal
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
 from pydantic import BaseModel
 
 from app.config.portfolio import PORTFOLIO, ALL_COMPANIES, get_company
@@ -70,9 +70,11 @@ async def scan_portfolio():
 
 
 @router.get("/portfolio", response_model=PortfolioResponse)
-async def list_portfolio():
+async def list_portfolio(response: Response):
     data, metadata = await scan_portfolio()
     stocks = [summarize_stock(c.ticker, c.name, c.sector, r) for c, r in zip(PORTFOLIO, data)]
+    # EOD data changes at most once per trading day; cache for 5 min, serve stale for up to 4 h.
+    response.headers["Cache-Control"] = "public, s-maxage=300, stale-while-revalidate=14400"
     return PortfolioResponse(stocks=[s for s in stocks if s is not None], **metadata)
 
 

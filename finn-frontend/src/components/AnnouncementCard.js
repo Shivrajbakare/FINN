@@ -40,7 +40,7 @@ export default function AnnouncementCard({ a }) {
         </div>
       )}
       <div className="card-foot">
-        <Link className="link" href={`/research?c=${a.ticker}`}>
+        <Link className="link" href={`/research?c=${encodeURIComponent(a.ticker)}`}>
           Research {a.company || a.ticker}<Icon name="chev" size={15} />
         </Link>
       </div>
