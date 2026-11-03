@@ -13,6 +13,8 @@ API routes, storage/retention, tests, deployment steps and remaining limitations
 The [live API verification](docs/verification/dynamic-api-2026-10-30.json) records
 an additional company, ITC, with eleven persisted citations and verified cache reuse.
 
+**AI Build History:** See [AI Build History & Coding-Agent Logs](AI_BUILD_HISTORY.md) for the consolidated, authentic record of all AI pair-programming sessions, engineering decisions, and tool executions.
+
 The default research method is exact source extraction. An optional AI evidence
 selector and conservative financial-figure extraction with deterministic
 comparisons are implemented. Free-form financial synthesis, OCR and general
