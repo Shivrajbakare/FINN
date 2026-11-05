@@ -127,7 +127,9 @@ def discover(company):
     recent = {**params, "from_date": (today - timedelta(days=365)).strftime("%d-%m-%Y"),
               "to_date": today.strftime("%d-%m-%Y")}
     with SourceClient(EXCHANGE_HOSTS) as client:
-        for api, query, annual in [("corporate-announcements", recent, False), ("annual-reports", params, True)]:
+        for idx, (api, query, annual) in enumerate([("corporate-announcements", recent, False), ("annual-reports", params, True)]):
+            if idx > 0:
+                time.sleep(1.0)
             endpoint = "https://www.nseindia.com/api/" + api + "?" + urlencode(query)
             for attempt in range(2):
                 try:
@@ -137,7 +139,7 @@ def discover(company):
                     break
                 except (SourceError, ValueError, TypeError) as exc:
                     if attempt == 0 and isinstance(exc, SourceError) and exc.code == "source_restricted":
-                        time.sleep(2.0)
+                        time.sleep(3.0)
                         continue
                     issues.append(f"NSE {api}: {getattr(exc, 'code', 'invalid_listing')}. "
                                   + (str(exc) if isinstance(exc, SourceError) else "Unsupported response format."))

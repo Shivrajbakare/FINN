@@ -42,6 +42,7 @@ class SourceClient:
     """Bounded requests; redirect targets must pass the same host/IP policy."""
     _lock = threading.Lock()
     _last = {}
+    _robots = {}
 
     def __init__(self, hosts):
         self.hosts = set(hosts)
@@ -55,7 +56,6 @@ class SourceClient:
                 "Accept-Language": "en-US,en;q=0.9",
             },
         )
-        self.robots = {}
         self.deadline = time.monotonic() + 100
 
     def __enter__(self):
@@ -75,8 +75,18 @@ class SourceClient:
                     raise SourceError("rate_limited", "Source rate limit reached. Retry later.")
                 self._last[host] = time.monotonic() + wait
             time.sleep(wait)
+            req_headers = {}
+            if host and (host == "www.nseindia.com" or host.endswith(".nseindia.com")):
+                req_headers["Referer"] = "https://www.nseindia.com/companies-listing/corporate-filings/announcements"
+                req_headers["Accept"] = "application/json, text/plain, */*"
+                req_headers["sec-ch-ua"] = '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"'
+                req_headers["sec-ch-ua-mobile"] = "?0"
+                req_headers["sec-ch-ua-platform"] = '"Windows"'
+                req_headers["sec-fetch-dest"] = "empty"
+                req_headers["sec-fetch-mode"] = "cors"
+                req_headers["sec-fetch-site"] = "same-origin"
             try:
-                with self.client.stream("GET", url) as response:
+                with self.client.stream("GET", url, headers=req_headers if req_headers else None) as response:
                     if allow_missing and response.status_code in (404, 410):
                         return b"", ""
                     if response.is_redirect:
@@ -112,7 +122,7 @@ class SourceClient:
         if _redirects > 3:
             raise SourceError("redirect_limit", "Official source redirected too many times.")
         parts = validate_url(url, self.hosts)
-        if parts.hostname not in self.robots:
+        if parts.hostname not in self._robots:
             robot_url = f"https://{parts.hostname}/robots.txt"
             for hop in range(4):
                 try:
@@ -126,8 +136,8 @@ class SourceClient:
                 raise SourceError("robots_unavailable", "Source access policy could not be read.")
             parser = RobotFileParser(robot_url)
             parser.parse(raw.decode("utf-8", errors="replace").splitlines())
-            self.robots[parts.hostname] = parser
-        parser = self.robots[parts.hostname]
+            self._robots[parts.hostname] = parser
+        parser = self._robots[parts.hostname]
         if not parser.can_fetch(USER_AGENT, url):
             raise SourceError("robots_denied", "Official source disallows automated retrieval of this resource.")
         delay = parser.crawl_delay(USER_AGENT) or 1
