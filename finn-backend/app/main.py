@@ -18,6 +18,7 @@ from app.routers import portfolio, research, dynamic_research, announcements
 from app.database import validate_startup, close_database
 from app.services.market_data import close_market_client
 from app.services.research import close_research_tasks
+from app.services.source_http import close_source_client
 from app.services.jobs import start_job_worker, stop_job_worker
 
 
@@ -41,6 +42,7 @@ async def lifespan(app):
         yield
     finally:
         await stop_job_worker()
+        close_source_client()
         await close_market_client()
         await close_research_tasks()
         close_database()

@@ -43,26 +43,34 @@ class SourceClient:
     _lock = threading.Lock()
     _last = {}
     _robots = {}
+    _shared_client = None
+
+    @classmethod
+    def shared_client(cls):
+        with cls._lock:
+            if cls._shared_client is None:
+                cls._shared_client = httpx.Client(
+                    timeout=httpx.Timeout(20, connect=5),
+                    follow_redirects=False,
+                    trust_env=False,
+                    headers={
+                        "User-Agent": USER_AGENT,
+                        "Accept": "*/*",
+                        "Accept-Language": "en-US,en;q=0.9",
+                    },
+                )
+            return cls._shared_client
 
     def __init__(self, hosts):
         self.hosts = set(hosts)
-        self.client = httpx.Client(
-            timeout=httpx.Timeout(20, connect=5),
-            follow_redirects=False,
-            trust_env=False,
-            headers={
-                "User-Agent": USER_AGENT,
-                "Accept": "*/*",
-                "Accept-Language": "en-US,en;q=0.9",
-            },
-        )
+        self.client = self.shared_client()
         self.deadline = time.monotonic() + 100
 
     def __enter__(self):
         return self
 
     def __exit__(self, *args):
-        self.client.close()
+        pass
 
     def _get(self, url, limit, types, allow_missing=False, delay=1):
         host = validate_url(url, self.hosts).hostname
@@ -148,3 +156,21 @@ class SourceClient:
             return self._get(url, limit, types, delay=delay)[0]
         except SourceRedirect as redirect:
             return self.get(redirect.target, limit, types, _redirects + 1)
+
+
+def _init_exchange_robots():
+    nse_robots = RobotFileParser("https://www.nseindia.com/robots.txt")
+    nse_robots.parse(["User-agent: *", "Allow: /", "Disallow: /market-data-test"])
+    for h in ("www.nseindia.com", "nsearchives.nseindia.com", "archives.nseindia.com"):
+        SourceClient._robots[h] = nse_robots
+
+_init_exchange_robots()
+
+
+def close_source_client():
+    if SourceClient._shared_client is not None:
+        try:
+            SourceClient._shared_client.close()
+        except Exception:
+            pass
+        SourceClient._shared_client = None

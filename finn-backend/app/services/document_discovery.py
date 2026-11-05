@@ -131,15 +131,15 @@ def discover(company):
             if idx > 0:
                 time.sleep(1.0)
             endpoint = "https://www.nseindia.com/api/" + api + "?" + urlencode(query)
-            for attempt in range(2):
+            for attempt in range(3):
                 try:
                     data = json.loads(client.get(endpoint, 8_000_000, {"application/json"}))
                     documents.extend(exchange_documents(data, company, endpoint, annual))
                     successful += 1
                     break
                 except (SourceError, ValueError, TypeError) as exc:
-                    if attempt == 0 and isinstance(exc, SourceError) and exc.code == "source_restricted":
-                        time.sleep(3.0)
+                    if attempt < 2 and isinstance(exc, SourceError) and exc.code == "source_restricted":
+                        time.sleep(2.0 * (attempt + 1))
                         continue
                     issues.append(f"NSE {api}: {getattr(exc, 'code', 'invalid_listing')}. "
                                   + (str(exc) if isinstance(exc, SourceError) else "Unsupported response format."))
