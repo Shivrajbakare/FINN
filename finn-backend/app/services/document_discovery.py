@@ -139,6 +139,7 @@ def discover(company):
                     break
                 except (SourceError, ValueError, TypeError) as exc:
                     if attempt < 2 and isinstance(exc, SourceError) and exc.code == "source_restricted":
+                        client._ensure_nse_session(force=True)
                         time.sleep(2.0 * (attempt + 1))
                         continue
                     issues.append(f"NSE {api}: {getattr(exc, 'code', 'invalid_listing')}. "

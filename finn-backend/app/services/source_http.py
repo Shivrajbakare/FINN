@@ -72,21 +72,24 @@ class SourceClient:
     def __exit__(self, *args):
         pass
 
-    def _ensure_nse_session(self):
+    def _ensure_nse_session(self, force=False):
         if "www.nseindia.com" in self.hosts:
-            has_cookie = any(c.name in ("_abck", "bm_sz", "nsit") for c in self.client.cookies.jar)
-            if not has_cookie:
-                try:
-                    self.client.get(
-                        "https://www.nseindia.com/get-quotes/equity?symbol=INFY",
-                        headers={
-                            "User-Agent": USER_AGENT,
-                            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                            "Accept-Language": "en-US,en;q=0.9",
-                        },
-                    )
-                except Exception:
-                    pass
+            with self._lock:
+                has_cookie = any(c.name in ("_abck", "bm_sz", "nsit") for c in self.client.cookies.jar)
+                if not has_cookie or force:
+                    try:
+                        self.client.cookies.clear()
+                        self.client.get(
+                            "https://www.nseindia.com/get-quotes/equity?symbol=INFY",
+                            follow_redirects=True,
+                            headers={
+                                "User-Agent": USER_AGENT,
+                                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                                "Accept-Language": "en-US,en;q=0.9",
+                            },
+                        )
+                    except Exception:
+                        pass
 
     def _get(self, url, limit, types, allow_missing=False, delay=1):
         host = validate_url(url, self.hosts).hostname
@@ -103,7 +106,13 @@ class SourceClient:
             time.sleep(wait)
             req_headers = {}
             if host and (host == "www.nseindia.com" or host.endswith(".nseindia.com")):
-                req_headers["Referer"] = "https://www.nseindia.com/get-quotes/equity?symbol=INFY"
+                req_headers["Referer"] = (
+                    "https://www.nseindia.com/companies-listing/corporate-filings/annual-reports"
+                    if "annual-reports" in url
+                    else "https://www.nseindia.com/companies-listing/corporate-filings/announcements"
+                    if "corporate-announcements" in url
+                    else "https://www.nseindia.com/get-quotes/equity?symbol=INFY"
+                )
                 req_headers["Accept"] = "application/json, text/plain, */*"
                 req_headers["sec-ch-ua"] = '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"'
                 req_headers["sec-ch-ua-mobile"] = "?0"
@@ -120,6 +129,10 @@ class SourceClient:
                         validate_url(target, self.hosts)
                         raise SourceRedirect(target)
                     if response.status_code in (429, 401, 403):
+                        if host == "www.nseindia.com" and attempt == 0:
+                            self._ensure_nse_session(force=True)
+                            time.sleep(1.0)
+                            continue
                         raise SourceError("source_restricted", f"Official source returned HTTP {response.status_code}; retry later or use another official source.")
                     if response.status_code >= 500 and attempt == 0:
                         continue
